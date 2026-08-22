@@ -198,103 +198,115 @@ export default function TeacherDashboard() {
         showToast("Failed to publish assessment", "error");
       }
     } catch {
-      showToast("Network error publishing exam", "error");
+      showToast("Network error while publishing assessment", "error");
     }
   };
 
-  const handleEndExamEarly = async (examId: string, examName: string) => {
-    if (!confirm(`Are you sure you want to end assessment "${examName}" early? All active candidate sessions will close.`)) return;
+  const handleEndExamEarly = async (examId: string) => {
     try {
-      const res = await apiFetch(`/exams/${examId}/end-early`, { token, method: "POST" });
+      const res = await apiFetch(`/exams/${examId}/end`, { token, method: "POST" });
       if (res.ok) {
-        showToast(`Assessment "${examName}" ended early. Grades computed.`, "success");
+        showToast("Assessment manually terminated for all candidates.", "success");
+        setLiveProctorExam(null);
         fetchData();
-        if (liveProctorExam && liveProctorExam.id === examId) setLiveProctorExam(null);
       } else {
-        showToast("Failed to end exam early", "error");
+        showToast("Failed to terminate assessment", "error");
       }
     } catch {
-      showToast("Network error ending exam", "error");
+      showToast("Network error while terminating assessment", "error");
     }
   };
 
   const handleDeleteExam = async (examId: string) => {
+    if (!confirm("Are you sure you want to delete this assessment? This will delete all student records and responses associated with it.")) return;
     try {
       const res = await apiFetch(`/exams/${examId}`, { token, method: "DELETE" });
       if (res.ok) {
         showToast("Assessment successfully deleted", "success");
+        setPreviewExam(null);
         fetchData();
       } else {
         showToast("Failed to delete assessment", "error");
       }
     } catch {
-      showToast("Network error deleting exam", "error");
+      showToast("Network error while deleting assessment", "error");
     }
   };
 
-  const handleGenerateCredentials = async (examId: string, examName: string) => {
+  const handleGenerateCredentials = async (examId: string) => {
     try {
-      const res = await apiFetch(`/exams/${examId}/credentials`, { token, method: "POST" });
+      const res = await apiFetch(`/exams/${examId}/generate-passcodes`, { token, method: "POST" });
       if (res.ok) {
-        const data = await res.json();
-        const count = Array.isArray(data) ? data.length : (data.count || 0);
-        showToast(`Generated & emailed passcodes for ${count} candidates!`, "success");
+        showToast("Candidate credentials and passcodes generated successfully!", "success");
+        fetchData();
       } else {
-        const err = await res.json().catch(() => ({}));
-        showToast(err.detail || "Failed to generate candidate passcodes", "error");
+        showToast("Failed to generate passcodes", "error");
       }
     } catch {
-      showToast("Network error generating passcodes", "error");
+      showToast("Network error while generating passcodes", "error");
     }
   };
 
   const handleDownloadCredentialsCSV = async (examId: string, examName: string) => {
     try {
-      const res = await apiFetch(`/exams/${examId}/credentials/export`, { token });
+      const res = await apiFetch(`/exams/${examId}/export-passcodes-csv`, { token });
       if (res.ok) {
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Candidate_Passcodes_${examName.replace(/\s+/g, "_")}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        showToast("Candidate credentials CSV exported!", "success");
+        const text = await res.text();
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Credentials_${examName.replace(/\s+/g, "_")}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        showToast("Failed to download CSV", "error");
       }
     } catch {
-      showToast("Failed to export credentials CSV", "error");
+      showToast("Network error while downloading credentials CSV", "error");
     }
   };
 
-  // Create Exam Handler
+  // Exam Generator Submit
   const handleCreateExam = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!examName || !examSubject) {
-      showToast("Please provide an assessment title and select a knowledge source", "error");
+    if (!examName.trim()) {
+      showToast("Please enter an assessment name", "error");
       return;
     }
+    if (!examSubject) {
+      showToast("Please select or upload a knowledge source first", "error");
+      return;
+    }
+
     setIsGenerating(true);
     try {
-      const totalMarksNum = parseFloat(examMarks) || 50;
-      const numQuestions = questionType === "mixed" 
-        ? (parseInt(numMcq) || 5) + (parseInt(numSubjective) || 2)
-        : (parseInt(numMcq) || 5);
-      const marksPerQ = Math.max(1, Math.round(totalMarksNum / (numQuestions || 1)));
+      // Build simple blueprint configuration matching back-end payload schema
+      const totalMarksNum = parseFloat(examMarks) || 100;
+      
+      // Calculate dynamic MCQ vs subjective counts based on type
+      let finalMcqCount = parseInt(numMcq) || 5;
+      let finalSubjCount = parseInt(numSubjective) || 0;
 
-      const blueprint = {
-        topic: examTopic || "General",
-        num_questions: numQuestions,
-        difficulty: difficulty,
-        question_type: questionType,
-        marks_per_question: marksPerQ,
+      if (questionType === "mcq") {
+        finalSubjCount = 0;
+      } else if (questionType === "subjective") {
+        finalMcqCount = 0;
+      } else if (questionType === "tf") {
+        finalMcqCount = parseInt(numMcq) || 5; // Reused numMcq state
+        finalSubjCount = 0;
+      }
+
+      const blueprint: any = {
+        difficulty_profile: difficulty,
         cognitive_target: cognitiveTarget,
-        custom_instructions: customPromptInstructions,
-        distribution: {
-          easy_pct: diffEasyPct,
-          medium_pct: diffMedPct,
-          hard_pct: diffHardPct,
-        },
+        topic: examTopic || "General",
+        question_distribution: {
+          mcq: finalMcqCount,
+          subjective: finalSubjCount,
+          tf: questionType === "tf" ? finalMcqCount : 0
+        }
       };
 
       const payload = {
@@ -428,6 +440,10 @@ export default function TeacherDashboard() {
       setExamStartDate(formatLocalDateTime(now));
       const end = new Date(now.getTime() + durMins * 60000);
       setExamEndDate(formatLocalDateTime(end));
+    } else if (preset === "open30days") {
+      setExamStartDate(formatLocalDateTime(now));
+      const end = new Date(now.getTime() + 30 * 24 * 60 * 60000);
+      setExamEndDate(formatLocalDateTime(end));
     } else if (preset === "today4pm") {
       const start = new Date();
       start.setHours(16, 0, 0, 0);
@@ -444,29 +460,25 @@ export default function TeacherDashboard() {
       setExamStartDate(formatLocalDateTime(start));
       const end = new Date(start.getTime() + durMins * 60000);
       setExamEndDate(formatLocalDateTime(end));
-    } else if (preset === "open30days") {
-      setExamStartDate(formatLocalDateTime(now));
-      const end = new Date(now.getTime() + 30 * 24 * 60 * 60000);
-      setExamEndDate(formatLocalDateTime(end));
     }
   };
 
-  const labelCls = "block text-xs font-semibold text-[#242321] dark:text-[#F5F5F4] mb-1 uppercase tracking-wider";
-  const inputCls = "w-full bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-lg px-3 py-2 text-xs text-[#242321] dark:text-[#F5F5F4] focus:outline-none focus:ring-1 focus:ring-[#C84B18]";
+  const labelCls = "block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider";
+  const inputCls = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium";
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-12">
       {/* Top Header & Metrics Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E0D8] dark:border-[#292524] pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
         <div>
-          <span className="text-xs font-semibold text-[#C84B18] dark:text-[#EA580C] uppercase tracking-wider">
-            Academic Instructor Workspace
+          <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">
+            Instructor Studio Dashboard
           </span>
-          <h1 className="text-2xl font-serif font-bold text-[#242321] dark:text-[#F5F5F4] mt-1">
+          <h1 className="text-xl font-extrabold text-slate-900 dark:text-white mt-1">
             Teacher Command Center
           </h1>
-          <p className="text-xs text-[#716D67] dark:text-[#A8A29E] mt-0.5">
-            Welcome, <b>{fullName || "Instructor"}</b>. Autonomous AI assessment synthesis & proctoring sandbox.
+          <p className="text-xs text-slate-500 mt-1 font-medium">
+            Welcome back, <b className="text-slate-700 dark:text-slate-350">{fullName || "Instructor"}</b>. Autonomous AI assessment synthesis & proctoring sandbox.
           </p>
         </div>
 
@@ -476,7 +488,7 @@ export default function TeacherDashboard() {
               window.location.hash = "create";
               document.getElementById("create")?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="btn-primary flex items-center gap-2 text-xs py-2 px-4 shadow-sm"
+            className="px-4.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Create Assessment</span>
@@ -486,51 +498,51 @@ export default function TeacherDashboard() {
 
       {/* KPI Cards Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 shadow-xs">
-          <div className="text-[11px] font-medium text-[#716D67] dark:text-[#A8A29E] uppercase tracking-wider flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-[#C84B18]" />
+        <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Calendar className="h-4 w-4 text-blue-600" />
             <span>Assessments</span>
           </div>
-          <div className="text-2xl font-bold text-[#242321] dark:text-[#F5F5F4] mt-1">{exams.length}</div>
-          <div className="text-[10px] text-[#716D67] mt-0.5">{exams.filter((e) => e.is_published).length} Published Live</div>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{exams.length}</div>
+          <div className="text-[10px] text-slate-400 mt-1 font-bold uppercase">{exams.filter((e) => e.is_published).length} Published Live</div>
         </div>
 
-        <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 shadow-xs">
-          <div className="text-[11px] font-medium text-[#716D67] dark:text-[#A8A29E] uppercase tracking-wider flex items-center gap-1.5">
-            <BookOpen className="h-3.5 w-3.5 text-[#C84B18]" />
+        <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <BookOpen className="h-4 w-4 text-blue-600" />
             <span>Vector Docs</span>
           </div>
-          <div className="text-2xl font-bold text-[#242321] dark:text-[#F5F5F4] mt-1">{documents.length}</div>
-          <div className="text-[10px] text-[#716D67] mt-0.5">RAG Indexed Sources</div>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{documents.length}</div>
+          <div className="text-[10px] text-slate-400 mt-1 font-bold uppercase">RAG Indexed Sources</div>
         </div>
 
-        <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 shadow-xs">
-          <div className="text-[11px] font-medium text-[#716D67] dark:text-[#A8A29E] uppercase tracking-wider flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5 text-[#C84B18]" />
-            <span>Cohorts & Classes</span>
+        <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Users className="h-4 w-4 text-blue-600" />
+            <span>Student Directories</span>
           </div>
-          <div className="text-2xl font-bold text-[#242321] dark:text-[#F5F5F4] mt-1">{kbSubjects.length}</div>
-          <div className="text-[10px] text-[#716D67] mt-0.5">Academic Mappings</div>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{studentDirectories.length}</div>
+          <div className="text-[10px] text-slate-400 mt-1 font-bold uppercase">Cohort Rosters</div>
         </div>
 
-        <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 shadow-xs">
-          <div className="text-[11px] font-medium text-[#716D67] dark:text-[#A8A29E] uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-[#C84B18]" />
-            <span>AI Studio</span>
+        <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 shadow-sm">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 text-blue-600" />
+            <span>AI Copilot</span>
           </div>
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">Ready</div>
-          <div className="text-[10px] text-[#716D67] mt-0.5">Gemini Co-Pilot Active</div>
+          <div className="text-2xl font-extrabold text-emerald-600 mt-1">Active</div>
+          <div className="text-[10px] text-slate-400 mt-1 font-bold uppercase">Gemini Models Online</div>
         </div>
       </div>
 
       {/* View Switcher Pill Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-[#E5E0D8] dark:border-[#292524] no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-100 dark:border-slate-800 no-scrollbar">
         <button
           onClick={() => switchSectionTab("all")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
             activeSectionTab === "all"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           All Overview
@@ -540,8 +552,8 @@ export default function TeacherDashboard() {
           onClick={() => switchSectionTab("exams")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
             activeSectionTab === "exams"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <GraduationCap className="h-3.5 w-3.5" />
@@ -552,20 +564,20 @@ export default function TeacherDashboard() {
           onClick={() => switchSectionTab("create")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
             activeSectionTab === "create"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Plus className="h-3.5 w-3.5" />
-          <span>Create Quiz Wizard</span>
+          <span>Create Assessment Wizard</span>
         </button>
 
         <button
           onClick={() => switchSectionTab("bank")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
             activeSectionTab === "bank"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Sparkles className="h-3.5 w-3.5" />
@@ -576,8 +588,8 @@ export default function TeacherDashboard() {
           onClick={() => switchSectionTab("kb")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
             activeSectionTab === "kb"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <BookOpen className="h-3.5 w-3.5" />
@@ -588,8 +600,8 @@ export default function TeacherDashboard() {
           onClick={() => switchSectionTab("students")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
             activeSectionTab === "students"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Users className="h-3.5 w-3.5" />
@@ -600,8 +612,8 @@ export default function TeacherDashboard() {
           onClick={() => switchSectionTab("reports")}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
             activeSectionTab === "reports"
-              ? "bg-[#C84B18] text-white shadow-xs"
-              : "bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-[#F5F5F4]"
+              ? "bg-blue-600 text-white shadow-sm"
+              : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <BarChart3 className="h-3.5 w-3.5" />
@@ -609,7 +621,7 @@ export default function TeacherDashboard() {
         </button>
       </div>
 
-      {/* ═══════ SECTION 1: ASSESSMENTS TABLE ═══════ */}
+      {/* SECTION 1: ASSESSMENTS TABLE */}
       {(activeSectionTab === "all" || activeSectionTab === "exams") && (
       <section id="exams" className="scroll-mt-16 space-y-4">
         <LiveAssessmentsTable
@@ -632,55 +644,55 @@ export default function TeacherDashboard() {
       </section>
       )}
 
-      {/* ═══════ SECTION 2: CREATE ASSESSMENT WORKFLOW WIZARD ═══════ */}
+      {/* SECTION 2: CREATE ASSESSMENT WORKFLOW WIZARD */}
       {(activeSectionTab === "all" || activeSectionTab === "create") && (
       <section id="create" className="scroll-mt-16 space-y-4">
-        <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-6 shadow-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#E5E0D8] dark:border-[#292524]">
+        <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <h2 className="text-base font-bold text-[#242321] dark:text-[#F5F5F4]">
-                Create New Assessment
+              <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
+                Create New Assessment Room
               </h2>
-              <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
-                Follow the 4 top-down steps below to synthesize and calibrate your examination paper.
+              <p className="text-xs text-slate-500 mt-1 font-medium">
+                Follow the 4 setup steps below to generate and publish your examination paper.
               </p>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C84B18]/10 text-[#C84B18] text-xs font-bold self-start sm:self-auto">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/10 text-blue-600 text-xs font-bold self-start sm:self-auto">
               <span>Step {createStep} of 4</span>
             </div>
           </div>
 
-          {/* ═══════ TOP-DOWN VERTICAL STEPPER ═══════ */}
+          {/* TOP-DOWN VERTICAL STEPPER */}
           <form onSubmit={handleCreateExam} className="space-y-4">
             
             {/* STEP 1: CONTENT SOURCE */}
             <div className={`border rounded-2xl transition-all overflow-hidden ${
               createStep === 1
-                ? "bg-white dark:bg-[#171615] border-[#C84B18]/40 shadow-sm ring-1 ring-[#C84B18]/20"
+                ? "bg-white dark:bg-[#131b2e] border-blue-500/40 shadow-sm ring-1 ring-blue-500/20"
                 : createStep > 1
-                ? "bg-white dark:bg-[#171615] border-[#E5E0D8] dark:border-[#292524]"
-                : "bg-[#F7F4EF]/60 dark:bg-[#141312]/60 border-[#E5E0D8] dark:border-[#292524] opacity-85"
+                ? "bg-white dark:bg-[#131b2e] border-slate-200 dark:border-slate-800"
+                : "bg-slate-50/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 opacity-80"
             }`}>
               {/* Step 1 Header */}
               <div
                 onClick={() => setCreateStep(1)}
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F7F4EF]/50 dark:hover:bg-[#1D1B19]/50 transition-colors"
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs ${
                     createStep > 1
                       ? "bg-emerald-600 text-white"
                       : createStep === 1
-                      ? "bg-[#C84B18] text-white"
-                      : "bg-[#E5E0D8] dark:bg-[#292524] text-[#716D67]"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-200 dark:bg-slate-800 text-slate-550"
                   }`}>
                     {createStep > 1 ? <Check className="h-4 w-4" /> : "1"}
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-[#242321] dark:text-[#F5F5F4]">
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                       01. Knowledge Source & Assessment Details
                     </h3>
-                    <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
                       {examName ? `${examName} • ${examSubject || "General"}` : "Select curriculum domain and title"}
                     </p>
                   </div>
@@ -688,15 +700,15 @@ export default function TeacherDashboard() {
 
                 <div className="flex items-center gap-2">
                   {createStep > 1 && (
-                    <span className="text-xs font-semibold text-[#C84B18] hover:underline">Edit</span>
+                    <span className="text-xs font-bold text-blue-650 hover:underline">Edit</span>
                   )}
-                  <ChevronDown className={`h-4 w-4 text-[#716D67] transition-transform ${createStep === 1 ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform ${createStep === 1 ? "rotate-180" : ""}`} />
                 </div>
               </div>
 
               {/* Step 1 Body */}
               {createStep === 1 && (
-                <div className="p-5 pt-1 border-t border-[#E5E0D8] dark:border-[#292524] space-y-4 max-w-xl animate-fadeIn">
+                <div className="p-5 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-4 max-w-xl animate-fadeIn">
                   
                   {/* Knowledge Source Selection / Upload Dual-Mode Toggle */}
                   <div className="space-y-2 pt-2">
@@ -705,7 +717,7 @@ export default function TeacherDashboard() {
                       <button
                         type="button"
                         onClick={() => setIsStep1KbModalOpen(true)}
-                        className="text-xs font-bold text-[#C84B18] dark:text-[#EA580C] hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         <span>+ Upload New KB</span>
@@ -713,14 +725,14 @@ export default function TeacherDashboard() {
                     </div>
 
                     {/* Mode Toggle Switcher */}
-                    <div className="flex p-1 bg-[#F0ECE4]/60 dark:bg-[#1D1B19] rounded-xl border border-[#E5E0D8] dark:border-[#292524]">
+                    <div className="flex p-1 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-250/60 dark:border-slate-800">
                       <button
                         type="button"
                         onClick={() => setStep1SourceMode("select")}
                         className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           step1SourceMode === "select"
-                            ? "bg-white dark:bg-[#292524] text-[#242321] dark:text-[#F5F5F4] shadow-xs"
-                            : "text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-white"
+                            ? "bg-white dark:bg-[#131b2e] text-slate-900 dark:text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         <BookOpen className="h-3.5 w-3.5" />
@@ -731,18 +743,18 @@ export default function TeacherDashboard() {
                         onClick={() => setStep1SourceMode("upload")}
                         className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           step1SourceMode === "upload"
-                            ? "bg-[#C84B18] dark:bg-[#EA580C] text-white shadow-xs"
-                            : "text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-white"
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "text-slate-550 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         <UploadCloud className="h-3.5 w-3.5" />
-                        <span>Upload New Document Now</span>
+                        <span>Upload New Document</span>
                       </button>
                     </div>
 
                     {/* Notification Chip if document was just uploaded */}
                     {step1UploadSuccess && (
-                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs">
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                           <span>
@@ -792,21 +804,21 @@ export default function TeacherDashboard() {
                               placeholder="e.g. general_101 or ai_unit_1"
                               className={inputCls}
                             />
-                            <p className="text-[11px] text-amber-600 dark:text-amber-400">
-                              No existing KB documents found. Switch to &ldquo;Upload New Document Now&rdquo; above to add your lecture notes or textbooks!
+                            <p className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
+                              No existing KB documents found. Switch to &ldquo;Upload New Document&rdquo; above to add your materials!
                             </p>
                           </div>
                         )}
-                        <p className="text-[11px] text-[#716D67]">
-                          Questions will be strictly generated using documents in this knowledge source.
+                        <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
+                          Questions will be generated using documents in this selected subject.
                         </p>
                       </div>
                     ) : (
                       /* MODE B: Direct Inline KB Document Upload */
-                      <div className="space-y-3 p-3.5 rounded-xl bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524]">
+                      <div className="space-y-3.5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                         <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
-                            Subject / Knowledge Domain <span className="text-[#C84B18]">*</span>
+                          <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            Subject / Knowledge Domain <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
@@ -839,12 +851,12 @@ export default function TeacherDashboard() {
                               validateAndSetStep1File(e.dataTransfer.files[0]);
                             }
                           }}
-                          className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${
+                          className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer transition-all ${
                             step1IsDragging
-                              ? "border-[#C84B18] bg-[#C84B18]/5"
+                              ? "border-blue-500 bg-blue-500/5"
                               : step1UploadFile
                               ? "border-emerald-500/50 bg-emerald-50/20 dark:bg-emerald-950/10"
-                              : "border-[#E5E0D8] dark:border-[#292524] hover:border-[#C84B18]/60 bg-white dark:bg-[#171615]"
+                              : "border-slate-200 dark:border-slate-800 hover:border-blue-500 bg-white dark:bg-[#131b2e]"
                           }`}
                           onClick={() => {
                             const input = document.getElementById("step1-file-input");
@@ -864,12 +876,12 @@ export default function TeacherDashboard() {
                           />
 
                           {step1UploadFile ? (
-                            <div className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-[#171615] border border-emerald-500/30">
+                            <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#131b2e] border border-emerald-500/30">
                               <div className="flex items-center gap-2.5 text-left truncate">
-                                <FileText className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                <FileText className="h-5 w-5 text-emerald-600 dark:text-emerald-450 shrink-0" />
                                 <div className="truncate">
-                                  <div className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4] truncate">{step1UploadFile.name}</div>
-                                  <div className="text-[10px] text-[#716D67]">{(step1UploadFile.size / 1024).toFixed(1)} KB</div>
+                                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{step1UploadFile.name}</div>
+                                  <div className="text-[10px] text-slate-500">{(step1UploadFile.size / 1024).toFixed(1)} KB</div>
                                 </div>
                               </div>
                               <button
@@ -885,11 +897,11 @@ export default function TeacherDashboard() {
                             </div>
                           ) : (
                             <div className="space-y-1 py-1">
-                              <UploadCloud className="h-6 w-6 text-[#C84B18] mx-auto" />
-                              <div className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4]">
+                              <UploadCloud className="h-6 w-6 text-blue-600 mx-auto" />
+                              <div className="text-xs font-bold text-slate-850 dark:text-white">
                                 Drop document file or click to browse
                               </div>
-                              <div className="text-[10px] text-[#716D67] dark:text-[#A8A29E]">
+                              <div className="text-[10px] text-slate-450">
                                 PDF, DOCX, TXT, PPTX (Max 25MB)
                               </div>
                             </div>
@@ -901,7 +913,7 @@ export default function TeacherDashboard() {
                           type="button"
                           onClick={() => handleStep1DirectUpload()}
                           disabled={isStep1Uploading || !step1UploadFile || !step1UploadSubject.trim()}
-                          className="w-full py-2 px-4 bg-[#C84B18] hover:bg-[#B33E0F] dark:bg-[#EA580C] text-white font-bold rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                          className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-750 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                         >
                           {isStep1Uploading ? (
                             <>
@@ -932,7 +944,7 @@ export default function TeacherDashboard() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className={labelCls}>Topic Keyword</label>
+                    <label className={labelCls}>Topic Keyword Focus</label>
                     <input
                       type="text"
                       value={examTopic}
@@ -943,7 +955,7 @@ export default function TeacherDashboard() {
                   </div>
 
                   <div className="pt-2 flex justify-end">
-                    <button type="button" onClick={() => setCreateStep(2)} className="btn-primary py-2 px-4 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+                    <button type="button" onClick={() => setCreateStep(2)} className="px-4.5 py-2.5 bg-blue-600 hover:bg-blue-750 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
                       <span>Continue to Questions</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
@@ -955,31 +967,31 @@ export default function TeacherDashboard() {
             {/* STEP 2: QUESTIONS CONFIG */}
             <div className={`border rounded-2xl transition-all overflow-hidden ${
               createStep === 2
-                ? "bg-white dark:bg-[#171615] border-[#C84B18]/40 shadow-sm ring-1 ring-[#C84B18]/20"
+                ? "bg-white dark:bg-[#131b2e] border-blue-500/40 shadow-sm ring-1 ring-blue-500/20"
                 : createStep > 2
-                ? "bg-white dark:bg-[#171615] border-[#E5E0D8] dark:border-[#292524]"
-                : "bg-[#F7F4EF]/60 dark:bg-[#141312]/60 border-[#E5E0D8] dark:border-[#292524] opacity-85"
+                ? "bg-white dark:bg-[#131b2e] border-slate-200 dark:border-slate-800"
+                : "bg-slate-50/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 opacity-80"
             }`}>
               {/* Step 2 Header */}
               <div
                 onClick={() => setCreateStep(2)}
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F7F4EF]/50 dark:hover:bg-[#1D1B19]/50 transition-colors"
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs ${
                     createStep > 2
                       ? "bg-emerald-600 text-white"
                       : createStep === 2
-                      ? "bg-[#C84B18] text-white"
-                      : "bg-[#E5E0D8] dark:bg-[#292524] text-[#716D67]"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-200 dark:bg-slate-800 text-slate-550"
                   }`}>
                     {createStep > 2 ? <Check className="h-4 w-4" /> : "2"}
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-[#242321] dark:text-[#F5F5F4]">
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                       02. Question Format, Difficulty & AI Blueprint
                     </h3>
-                    <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
                       {numMcq} MCQ • {numSubjective} Subjective • Difficulty: {difficulty.toUpperCase()}
                     </p>
                   </div>
@@ -987,15 +999,15 @@ export default function TeacherDashboard() {
 
                 <div className="flex items-center gap-2">
                   {createStep > 2 && (
-                    <span className="text-xs font-semibold text-[#C84B18] hover:underline">Edit</span>
+                    <span className="text-xs font-bold text-blue-650 hover:underline">Edit</span>
                   )}
-                  <ChevronDown className={`h-4 w-4 text-[#716D67] transition-transform ${createStep === 2 ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform ${createStep === 2 ? "rotate-180" : ""}`} />
                 </div>
               </div>
 
               {/* Step 2 Body */}
               {createStep === 2 && (
-                <div className="p-5 pt-1 border-t border-[#E5E0D8] dark:border-[#292524] space-y-4 max-w-xl animate-fadeIn">
+                <div className="p-5 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-4 max-w-xl animate-fadeIn">
                   <div className="grid grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
                       <label className={labelCls}>Question Format</label>
@@ -1036,8 +1048,8 @@ export default function TeacherDashboard() {
                         max="50"
                         className={inputCls}
                       />
-                      <p className="text-[11px] text-[#716D67]">
-                        Each question will have 4 domain-specific options with single correct answer.
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">
+                        Each question will have 4 options with a single correct answer.
                       </p>
                     </div>
                   )}
@@ -1067,7 +1079,7 @@ export default function TeacherDashboard() {
                         max="20"
                         className={inputCls}
                       />
-                      <p className="text-[11px] text-[#716D67]">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">
                         Students will provide descriptive answers evaluated against rubric key concepts.
                       </p>
                     </div>
@@ -1101,17 +1113,17 @@ export default function TeacherDashboard() {
                   )}
 
                   {/* AI Cognitive Target & Custom Guidelines */}
-                  <div className="p-4 rounded-xl bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] space-y-3.5 pt-3">
+                  <div className="p-4.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3.5 pt-3">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-[#C84B18] dark:text-[#EA580C]" />
-                      <span className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4]">
+                      <Sparkles className="h-4 w-4 text-blue-600" />
+                      <span className="text-xs font-bold text-slate-850 dark:text-white">
                         AI Blueprint Co-Pilot Tuning
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-[#57534E] dark:text-[#A8A29E] uppercase">
+                        <label className="text-[10px] font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wide">
                           Bloom's Cognitive Target
                         </label>
                         <select
@@ -1127,27 +1139,27 @@ export default function TeacherDashboard() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-[#57534E] dark:text-[#A8A29E] uppercase">
+                        <label className="text-[10px] font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wide">
                           Difficulty Ratio Blend
                         </label>
-                        <div className="flex items-center gap-2 pt-1">
-                          <span className="text-[11px] font-semibold text-[#C84B18]">Easy: {diffEasyPct}%</span>
-                          <span className="text-[11px] font-semibold text-amber-600">Med: {diffMedPct}%</span>
-                          <span className="text-[11px] font-semibold text-rose-600">Hard: {diffHardPct}%</span>
+                        <div className="flex items-center gap-2.5 pt-2">
+                          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Easy: {diffEasyPct}%</span>
+                          <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Med: {diffMedPct}%</span>
+                          <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider">Hard: {diffHardPct}%</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-[#57534E] dark:text-[#A8A29E] uppercase">
+                      <label className="text-[10px] font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wide">
                         Teacher Instructions to AI Generator
                       </label>
                       <textarea
-                        rows={2}
+                        rows={2.5}
                         value={customPromptInstructions}
                         onChange={(e) => setCustomPromptInstructions(e.target.value)}
-                        placeholder="e.g. Include Python code snippets, focus on numerical calculations, avoid trivial definitions..."
-                        className="w-full bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-lg p-2 text-xs text-[#242321] dark:text-[#F5F5F4] focus:outline-none focus:ring-1 focus:ring-[#C84B18]"
+                        placeholder="e.g. Include code snippets, focus on calculations, avoid trivial definitions..."
+                        className="w-full bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
                       />
                     </div>
                   </div>
@@ -1156,12 +1168,12 @@ export default function TeacherDashboard() {
                     <button
                       type="button"
                       onClick={() => setCreateStep(1)}
-                      className="px-3.5 py-2 border border-[#E5E0D8] dark:border-[#292524] rounded-xl text-xs font-semibold text-[#716D67] hover:text-[#242321] flex items-center gap-1.5"
+                      className="px-4.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-850 hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
                       <span>Back</span>
                     </button>
-                    <button type="button" onClick={() => setCreateStep(3)} className="btn-primary py-2 px-4 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+                    <button type="button" onClick={() => setCreateStep(3)} className="px-4.5 py-2.5 bg-blue-600 hover:bg-blue-750 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
                       <span>Continue to Rules</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
@@ -1173,31 +1185,31 @@ export default function TeacherDashboard() {
             {/* STEP 3: RULES & SCHEDULING */}
             <div className={`border rounded-2xl transition-all overflow-hidden ${
               createStep === 3
-                ? "bg-white dark:bg-[#171615] border-[#C84B18]/40 shadow-sm ring-1 ring-[#C84B18]/20"
+                ? "bg-white dark:bg-[#131b2e] border-blue-500/40 shadow-sm ring-1 ring-blue-500/20"
                 : createStep > 3
-                ? "bg-white dark:bg-[#171615] border-[#E5E0D8] dark:border-[#292524]"
-                : "bg-[#F7F4EF]/60 dark:bg-[#141312]/60 border-[#E5E0D8] dark:border-[#292524] opacity-85"
+                ? "bg-white dark:bg-[#131b2e] border-slate-200 dark:border-slate-800"
+                : "bg-slate-50/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 opacity-80"
             }`}>
               {/* Step 3 Header */}
               <div
                 onClick={() => setCreateStep(3)}
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F7F4EF]/50 dark:hover:bg-[#1D1B19]/50 transition-colors"
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs ${
                     createStep > 3
                       ? "bg-emerald-600 text-white"
                       : createStep === 3
-                      ? "bg-[#C84B18] text-white"
-                      : "bg-[#E5E0D8] dark:bg-[#292524] text-[#716D67]"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-200 dark:bg-slate-800 text-slate-550"
                   }`}>
                     {createStep > 3 ? <Check className="h-4 w-4" /> : "3"}
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-[#242321] dark:text-[#F5F5F4]">
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                       03. Duration, Marks & Schedule Window
                     </h3>
-                    <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
                       {examDuration} Minutes • {examMarks} Total Marks
                     </p>
                   </div>
@@ -1205,15 +1217,15 @@ export default function TeacherDashboard() {
 
                 <div className="flex items-center gap-2">
                   {createStep > 3 && (
-                    <span className="text-xs font-semibold text-[#C84B18] hover:underline">Edit</span>
+                    <span className="text-xs font-bold text-blue-650 hover:underline">Edit</span>
                   )}
-                  <ChevronDown className={`h-4 w-4 text-[#716D67] transition-transform ${createStep === 3 ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform ${createStep === 3 ? "rotate-180" : ""}`} />
                 </div>
               </div>
 
               {/* Step 3 Body */}
               {createStep === 3 && (
-                <div className="p-5 pt-1 border-t border-[#E5E0D8] dark:border-[#292524] space-y-4 max-w-xl animate-fadeIn">
+                <div className="p-5 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-4 max-w-xl animate-fadeIn">
                   <div className="grid grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
                       <label className={labelCls}>Duration (Minutes)</label>
@@ -1242,28 +1254,28 @@ export default function TeacherDashboard() {
                       <button
                         type="button"
                         onClick={() => setSchedulePreset("now")}
-                        className="px-3 py-1.5 text-xs font-semibold border border-[#E5E0D8] dark:border-[#292524] rounded-lg bg-[#F7F4EF] dark:bg-[#141312] hover:border-[#C84B18]"
+                        className="px-3.5 py-1.5 text-xs font-bold border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 hover:border-blue-500 cursor-pointer transition-all"
                       >
                         ⚡ Start Now
                       </button>
                       <button
                         type="button"
                         onClick={() => setSchedulePreset("open30days")}
-                        className="px-3 py-1.5 text-xs font-semibold border border-[#E5E0D8] dark:border-[#292524] rounded-lg bg-[#F7F4EF] dark:bg-[#141312] hover:border-[#C84B18]"
+                        className="px-3.5 py-1.5 text-xs font-bold border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 hover:border-blue-500 cursor-pointer transition-all"
                       >
                         📅 30-Day Window
                       </button>
                       <button
                         type="button"
                         onClick={() => setSchedulePreset("today4pm")}
-                        className="px-3 py-1.5 text-xs font-semibold border border-[#E5E0D8] dark:border-[#292524] rounded-lg bg-[#F7F4EF] dark:bg-[#141312] hover:border-[#C84B18]"
+                        className="px-3.5 py-1.5 text-xs font-bold border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 hover:border-blue-500 cursor-pointer transition-all"
                       >
                         Today 4 PM
                       </button>
                       <button
                         type="button"
                         onClick={() => setSchedulePreset("tomorrow10am")}
-                        className="px-3 py-1.5 text-xs font-semibold border border-[#E5E0D8] dark:border-[#292524] rounded-lg bg-[#F7F4EF] dark:bg-[#141312] hover:border-[#C84B18]"
+                        className="px-3.5 py-1.5 text-xs font-bold border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 hover:border-blue-500 cursor-pointer transition-all"
                       >
                         Tomorrow 10 AM
                       </button>
@@ -1295,12 +1307,12 @@ export default function TeacherDashboard() {
                     <button
                       type="button"
                       onClick={() => setCreateStep(2)}
-                      className="px-3.5 py-2 border border-[#E5E0D8] dark:border-[#292524] rounded-xl text-xs font-semibold text-[#716D67] hover:text-[#242321] flex items-center gap-1.5"
+                      className="px-4.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-850 hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
                       <span>Back</span>
                     </button>
-                    <button type="button" onClick={() => setCreateStep(4)} className="btn-primary py-2 px-4 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+                    <button type="button" onClick={() => setCreateStep(4)} className="px-4.5 py-2.5 bg-blue-600 hover:bg-blue-750 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
                       <span>Review & Generate</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
@@ -1312,52 +1324,52 @@ export default function TeacherDashboard() {
             {/* STEP 4: REVIEW & GENERATE */}
             <div className={`border rounded-2xl transition-all overflow-hidden ${
               createStep === 4
-                ? "bg-white dark:bg-[#171615] border-[#C84B18]/40 shadow-sm ring-1 ring-[#C84B18]/20"
-                : "bg-[#F7F4EF]/60 dark:bg-[#141312]/60 border-[#E5E0D8] dark:border-[#292524] opacity-85"
+                ? "bg-white dark:bg-[#131b2e] border-blue-500/40 shadow-sm ring-1 ring-blue-500/20"
+                : "bg-slate-50/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 opacity-80"
             }`}>
               {/* Step 4 Header */}
               <div
                 onClick={() => setCreateStep(4)}
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-[#F7F4EF]/50 dark:hover:bg-[#1D1B19]/50 transition-colors"
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs ${
                     createStep === 4
-                      ? "bg-[#C84B18] text-white"
-                      : "bg-[#E5E0D8] dark:bg-[#292524] text-[#716D67]"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-200 dark:bg-slate-800 text-slate-550"
                   }`}>
                     4
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-[#242321] dark:text-[#F5F5F4]">
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                       04. Final Blueprint Review & AI Paper Synthesis
                     </h3>
-                    <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
                       Confirm blueprint specs and generate assessment
                     </p>
                   </div>
                 </div>
 
-                <ChevronDown className={`h-4 w-4 text-[#716D67] transition-transform ${createStep === 4 ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform ${createStep === 4 ? "rotate-180" : ""}`} />
               </div>
 
               {/* Step 4 Body */}
               {createStep === 4 && (
-                <div className="p-5 pt-1 border-t border-[#E5E0D8] dark:border-[#292524] space-y-5 max-w-xl animate-fadeIn">
+                <div className="p-5 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-5 max-w-xl animate-fadeIn">
                   {/* Student Directory Selector with + Create Directory button */}
                   <div className="pt-2 space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4] uppercase tracking-wider flex items-center gap-1.5">
-                        <Users className="h-3.5 w-3.5 text-[#C84B18]" />
+                      <label className="text-[10px] font-bold text-slate-500 dark:text-slate-405 uppercase tracking-wider flex items-center gap-1.5">
+                        <Users className="h-4 w-4 text-blue-650" />
                         <span>Target Student Directory</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => setIsCreateDirModalOpen(true)}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#C84B18] hover:text-[#A0360D] dark:text-[#EA580C] dark:hover:text-[#F97316] transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                       >
                         <Plus className="h-3.5 w-3.5" />
-                        <span>Create New Student Directory</span>
+                        <span>Create Student Directory</span>
                       </button>
                     </div>
 
@@ -1376,12 +1388,12 @@ export default function TeacherDashboard() {
                           ))}
                         </select>
                       ) : (
-                        <div className="p-3.5 border border-dashed border-[#E5E0D8] dark:border-[#292524] rounded-xl bg-[#F7F4EF]/50 dark:bg-[#141312]/50 text-center">
-                          <p className="text-xs text-[#716D67] mb-2">No student directory created yet.</p>
+                        <div className="p-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 text-center">
+                          <p className="text-xs text-slate-550 mb-2.5 font-medium">No student directory created yet.</p>
                           <button
                             type="button"
                             onClick={() => setIsCreateDirModalOpen(true)}
-                            className="btn-primary py-1.5 px-3 text-xs font-bold inline-flex items-center gap-1.5 shadow-xs"
+                            className="px-3.5 py-2 bg-blue-650 hover:bg-blue-700 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             <span>Create First Student Directory</span>
@@ -1389,22 +1401,22 @@ export default function TeacherDashboard() {
                         </div>
                       )}
                     </div>
-                    <p className="text-[11px] text-[#716D67]">
-                      Eligible students in this directory will be snapped as immutable assessment candidates.
+                    <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
+                      Eligible students in this directory will be snapped as assessment candidates.
                     </p>
                   </div>
 
-                  <div className="bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 space-y-2.5 text-xs">
-                    <h4 className="font-bold text-[#242321] dark:text-[#F5F5F4] text-xs uppercase tracking-wider">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 space-y-2.5 text-xs">
+                    <h4 className="font-extrabold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                       Assessment Synthesis Summary
                     </h4>
-                    <div className="grid grid-cols-2 gap-2 text-[#716D67] dark:text-[#A8A29E]">
-                      <div>Title: <b className="text-[#242321] dark:text-[#F5F5F4]">{examName || "Untitled Assessment"}</b></div>
-                      <div>Source: <b className="text-[#242321] dark:text-[#F5F5F4]">{examSubject || "General"}</b></div>
-                      <div>Questions: <b className="text-[#242321] dark:text-[#F5F5F4]">{parseInt(numMcq) + parseInt(numSubjective)} Total ({numMcq} MCQ)</b></div>
-                      <div>Duration: <b className="text-[#242321] dark:text-[#F5F5F4]">{examDuration} min</b></div>
-                      <div>Marks: <b className="text-[#242321] dark:text-[#F5F5F4]">{examMarks} pts</b></div>
-                      <div>Directory: <b className="text-[#242321] dark:text-[#F5F5F4]">{studentDirectories.find(d => d.id === selectedDirectoryId)?.name || "Open / Unassigned"}</b></div>
+                    <div className="grid grid-cols-2 gap-2 text-slate-500 font-medium">
+                      <div>Title: <b className="text-slate-805 dark:text-slate-200">{examName || "Untitled Assessment"}</b></div>
+                      <div>Source: <b className="text-slate-805 dark:text-slate-200">{examSubject || "General"}</b></div>
+                      <div>Questions: <b className="text-slate-805 dark:text-slate-200">{parseInt(numMcq) + parseInt(numSubjective)} Total ({numMcq} MCQ)</b></div>
+                      <div>Duration: <b className="text-slate-805 dark:text-slate-200">{examDuration} min</b></div>
+                      <div>Marks: <b className="text-slate-805 dark:text-slate-200">{examMarks} pts</b></div>
+                      <div>Directory: <b className="text-slate-805 dark:text-slate-200">{studentDirectories.find(d => d.id === selectedDirectoryId)?.name || "Open / Unassigned"}</b></div>
                     </div>
                   </div>
 
@@ -1412,15 +1424,15 @@ export default function TeacherDashboard() {
                     <button
                       type="button"
                       onClick={() => setCreateStep(3)}
-                      className="px-3.5 py-2 border border-[#E5E0D8] dark:border-[#292524] rounded-xl text-xs font-semibold text-[#716D67] hover:text-[#242321] flex items-center gap-1.5"
+                      className="px-4.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-850 hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
                       <span>Back</span>
                     </button>
-                    <button type="submit" disabled={isGenerating} className="btn-primary py-2 px-5 text-xs font-bold flex items-center gap-2 shadow-xs">
+                    <button type="submit" disabled={isGenerating} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-755 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50">
                       {isGenerating ? (
                         <>
-                          <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           <span>Synthesizing Exam Paper...</span>
                         </>
                       ) : (
@@ -1440,14 +1452,14 @@ export default function TeacherDashboard() {
       </section>
       )}
 
-      {/* ═══════ SECTION 3: QUESTION BANK STUDIO ═══════ */}
+      {/* SECTION 3: QUESTION BANK STUDIO */}
       {(activeSectionTab === "all" || activeSectionTab === "bank") && (
       <section id="bank" className="scroll-mt-16 space-y-4">
         <QuestionBankManager />
       </section>
       )}
 
-      {/* ═══════ SECTION 4: KNOWLEDGE SOURCES (RAG VECTOR DB) ═══════ */}
+      {/* SECTION 4: KNOWLEDGE SOURCES (RAG VECTOR DB) */}
       {(activeSectionTab === "all" || activeSectionTab === "kb") && (
       <section id="kb" className="scroll-mt-16 space-y-4">
         <KnowledgeBaseManager
@@ -1458,7 +1470,7 @@ export default function TeacherDashboard() {
       </section>
       )}
 
-      {/* ═══════ SECTION 5: STUDENT DIRECTORY MANAGER ═══════ */}
+      {/* SECTION 5: STUDENT DIRECTORY MANAGER */}
       {(activeSectionTab === "all" || activeSectionTab === "students") && (
       <section id="students" className="scroll-mt-16 space-y-4">
         <StudentDirectoryManager />
@@ -1497,14 +1509,14 @@ export default function TeacherDashboard() {
         }}
       />
 
-      {/* ═══════ SECTION 6: GENERALIZED CLASSROOM QUIZ ANALYTICS ═══════ */}
+      {/* SECTION 6: GENERALIZED CLASSROOM QUIZ ANALYTICS */}
       {(activeSectionTab === "all" || activeSectionTab === "reports") && (
       <section id="reports" className="scroll-mt-16 space-y-4">
         <GradebookAnalytics exams={exams} />
       </section>
       )}
 
-      {/* ═══════ GLOBAL PAPER STUDIO PREVIEW MODAL ═══════ */}
+      {/* GLOBAL PAPER STUDIO PREVIEW MODAL */}
       {previewExam && (
         <PaperStudioModal
           exam={previewExam}
@@ -1516,7 +1528,7 @@ export default function TeacherDashboard() {
         />
       )}
 
-      {/* ═══════ GLOBAL LIVE ANTI-CHEAT PROCTORING COMMAND CENTER MODAL ═══════ */}
+      {/* GLOBAL LIVE ANTI-CHEAT PROCTORING COMMAND CENTER MODAL */}
       {liveProctorExam && (
         <LiveProctoringModal
           exam={liveProctorExam}

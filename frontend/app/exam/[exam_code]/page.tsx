@@ -425,48 +425,48 @@ export default function ExamPortal() {
 
   const currentQ = examStore.questions[currentIndex];
 
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   // VIEW 1: PRE-EXAM COUNTDOWN WAITING ROOM
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   if (examStatus === "not_started" && !isLogged) {
     return (
-      <div className="min-h-screen bg-[#F7F4EF] dark:bg-[#0E0D0C] flex flex-col items-center justify-center p-4">
-        <div className="max-w-lg w-full bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-8 shadow-xl text-center space-y-6 animate-fadeIn">
-          <div className="w-14 h-14 bg-[#C84B18]/10 text-[#C84B18] rounded-2xl flex items-center justify-center mx-auto">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div className="max-w-lg w-full bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-6 animate-fadeIn">
+          <div className="w-14 h-14 bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center mx-auto border border-blue-500/20">
             <CalendarClock className="h-7 w-7" />
           </div>
 
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-[#C84B18] uppercase tracking-wider">Scheduled Assessment</span>
-            <h1 className="text-xl font-bold font-serif text-[#242321] dark:text-[#F5F5F4]">
+            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Scheduled Assessment</span>
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white mt-1">
               {examStatusData?.exam_name || "Upcoming Assessment"}
             </h1>
-            <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
               This assessment is scheduled. The test room will automatically unlock when the countdown finishes.
             </p>
           </div>
 
           {/* Countdown Clock */}
-          <div className="grid grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-4 gap-3">
             {[
               { label: "Days", val: countdown.days },
               { label: "Hours", val: countdown.hours },
               { label: "Minutes", val: countdown.mins },
               { label: "Seconds", val: countdown.secs },
             ].map((t) => (
-              <div key={t.label} className="bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-3">
-                <div className="text-2xl font-bold font-mono text-[#C84B18]">{String(t.val).padStart(2, "0")}</div>
-                <div className="text-[10px] font-semibold text-[#716D67] uppercase">{t.label}</div>
+              <div key={t.label} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3">
+                <div className="text-2xl font-extrabold font-mono text-blue-600">{String(t.val).padStart(2, "0")}</div>
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{t.label}</div>
               </div>
             ))}
           </div>
 
-          <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-left text-xs text-amber-900 dark:text-amber-300 space-y-1">
-            <div className="font-bold flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" />
+          <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 text-left text-xs text-slate-700 dark:text-slate-350 space-y-1.5 font-medium">
+            <div className="font-bold flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
+              <Clock className="h-3.5 w-3.5 text-amber-600" />
               <span>Instructions & Pre-flight Checklist</span>
             </div>
-            <ul className="list-disc pl-4 text-[11px] space-y-0.5 opacity-90">
+            <ul className="list-disc pl-4 text-[11px] space-y-1 text-slate-550 dark:text-slate-400">
               <li>Ensure stable Wi-Fi connection and full battery/power.</li>
               <li>Keep full screen open during the test to avoid proctor flags.</li>
               <li>Have your candidate PIN/passcode ready for instant login.</li>
@@ -477,27 +477,27 @@ export default function ExamPortal() {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   // VIEW 2: CANDIDATE LOGIN & PASSCODE GATEWAY
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   if (!isLogged && !submittedResult) {
     return (
-      <div className="min-h-screen bg-[#F7F4EF] dark:bg-[#0E0D0C] flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-8 shadow-xl space-y-6 animate-fadeIn">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm space-y-6 animate-fadeIn">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#C84B18]/10 text-[#C84B18] rounded-xl flex items-center justify-center font-bold font-serif text-lg">
+            <div className="w-10 h-10 bg-blue-600 text-white rounded-2xl flex items-center justify-center font-extrabold text-lg">
               EQ
             </div>
             <div>
-              <h1 className="text-lg font-bold text-[#242321] dark:text-[#F5F5F4]">Candidate Examination Gateway</h1>
-              <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
-                Assessment Code: <b className="font-mono text-[#C84B18]">{examCode}</b>
+              <h1 className="text-base font-extrabold text-slate-900 dark:text-white">Candidate Examination Gateway</h1>
+              <p className="text-xs text-slate-500">
+                Assessment Code: <b className="font-mono text-blue-650 font-bold">{examCode}</b>
               </p>
             </div>
           </div>
 
           {loginError && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+            <div className="p-3.5 rounded-2xl bg-rose-500/5 border border-rose-200 dark:border-rose-900/50 text-xs text-rose-700 dark:text-rose-350 flex items-center gap-2 font-medium animate-fadeIn">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{loginError}</span>
             </div>
@@ -505,12 +505,12 @@ export default function ExamPortal() {
 
           {/* 1-Click Direct Start for Authenticated User */}
           {authToken && (
-            <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-2.5">
+            <div className="p-4.5 rounded-2xl bg-emerald-500/5 border border-emerald-200 dark:border-emerald-800/60 space-y-3 font-medium">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
                   Signed in as {authFullName || "Student"}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50">
+                <span className="px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50">
                   Active User
                 </span>
               </div>
@@ -518,17 +518,17 @@ export default function ExamPortal() {
                 type="button"
                 onClick={handleDirectStudentStart}
                 disabled={loading}
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {loading ? (
                   <>
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     <span>Preparing Exam Room...</span>
                   </>
                 ) : (
                   <>
                     <Play className="h-4 w-4 fill-current" />
-                    <span>1-Click Launch Exam as {authFullName || "Student"}</span>
+                    <span>1-Click Launch Exam Room</span>
                   </>
                 )}
               </button>
@@ -537,32 +537,32 @@ export default function ExamPortal() {
 
           {authToken && (
             <div className="relative flex items-center justify-center">
-              <div className="border-t border-[#E5E0D8] dark:border-[#292524] w-full" />
-              <span className="bg-white dark:bg-[#171615] px-3 text-[10px] font-bold text-[#716D67] uppercase tracking-wider shrink-0">
+              <div className="border-t border-slate-100 dark:border-slate-800 w-full" />
+              <span className="bg-white dark:bg-[#131b2e] px-3.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest shrink-0">
                 or enter candidate passcode
               </span>
-              <div className="border-t border-[#E5E0D8] dark:border-[#292524] w-full" />
+              <div className="border-t border-slate-100 dark:border-slate-800 w-full" />
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#242321] dark:text-[#F5F5F4]">
-                Registered Candidate Email / Username
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                Registered Email / Username
               </label>
               <input
                 type="text"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. student@institution.edu"
-                className="w-full bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-lg px-3 py-2.5 text-xs text-[#242321] dark:text-[#F5F5F4] focus:ring-1 focus:ring-[#C84B18] focus:outline-none"
+                placeholder="student@institution.edu"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-blue-500 focus:outline-none font-medium"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#242321] dark:text-[#F5F5F4]">
-                Timed Access PIN / Passcode
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                Access PIN / Passcode
               </label>
               <input
                 type="password"
@@ -570,14 +570,14 @@ export default function ExamPortal() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter 6-digit access passcode"
-                className="w-full bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-lg px-3 py-2.5 text-xs text-[#242321] dark:text-[#F5F5F4] font-mono tracking-wider focus:ring-1 focus:ring-[#C84B18] focus:outline-none"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white font-mono tracking-wider focus:ring-1 focus:ring-blue-500 focus:outline-none"
               />
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full py-2.5 text-xs font-bold flex items-center justify-center gap-2">
+            <button type="submit" disabled={loading} className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50">
               {loading ? (
                 <>
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   <span>Verifying Credentials...</span>
                 </>
               ) : (
@@ -589,7 +589,7 @@ export default function ExamPortal() {
             </button>
           </form>
 
-          <div className="pt-2 border-t border-[#E5E0D8] dark:border-[#292524] text-center text-[11px] text-[#716D67]">
+          <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             EduQuizX AI Proctoring Active • Fullscreen lockdown enabled
           </div>
         </div>
@@ -597,51 +597,51 @@ export default function ExamPortal() {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   // VIEW 3: COMPLETED RESULT SCORECARD
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   if (submittedResult) {
     const isPass = submittedResult.is_passed;
     return (
-      <div className="min-h-screen bg-[#F7F4EF] dark:bg-[#0E0D0C] flex flex-col items-center justify-center p-4">
-        <div className="max-w-xl w-full bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-8 shadow-2xl space-y-6 text-center animate-fadeIn">
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto ${
-            isPass ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40" : "bg-rose-100 text-rose-600 dark:bg-rose-950/40"
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div className="max-w-xl w-full bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm space-y-6 text-center animate-fadeIn">
+          <div className={`w-16 h-16 rounded-3xl flex items-center justify-center mx-auto border ${
+            isPass ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border-rose-500/20"
           }`}>
             <Trophy className="h-8 w-8" />
           </div>
 
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-[#C84B18] uppercase tracking-wider">
-              {isSimulation ? "Teacher Sandbox Simulation Result" : "Examination Result Summary"}
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {isSimulation ? "Instructor Sandbox Simulation Result" : "Examination Completed"}
             </span>
-            <h1 className="text-2xl font-bold font-serif text-[#242321] dark:text-[#F5F5F4]">
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-white mt-1">
               {isPass ? "Assessment Passed!" : "Assessment Completed"}
             </h1>
-            <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+            <p className="text-xs text-slate-500 mt-1 font-medium">
               {autoSubmitReason || "Your responses have been evaluated and recorded."}
             </p>
           </div>
 
           {/* Score Matrix */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="p-4 rounded-xl bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524]">
-              <div className="text-xs font-medium text-[#716D67] uppercase">Score Earned</div>
-              <div className="text-2xl font-bold text-[#C84B18] mt-1">
-                {submittedResult.score} <span className="text-xs text-[#716D67] font-normal">/ {submittedResult.total_marks || 50}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="p-4.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="text-[10px] font-bold text-slate-450 uppercase tracking-wider">Score Earned</div>
+              <div className="text-2xl font-extrabold text-blue-600 mt-1">
+                {submittedResult.score} <span className="text-xs text-slate-400 font-bold">/ {submittedResult.total_marks || 50}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524]">
-              <div className="text-xs font-medium text-[#716D67] uppercase">Percentage</div>
-              <div className="text-2xl font-bold text-[#242321] dark:text-[#F5F5F4] mt-1">
+            <div className="p-4.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="text-[10px] font-bold text-slate-450 uppercase tracking-wider">Accuracy</div>
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
                 {submittedResult.percentage}%
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] col-span-2 sm:col-span-1">
-              <div className="text-xs font-medium text-[#716D67] uppercase">Outcome</div>
-              <div className={`text-xl font-bold mt-1.5 ${isPass ? "text-emerald-600" : "text-rose-600"}`}>
+            <div className="p-4.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 col-span-2 sm:col-span-1">
+              <div className="text-[10px] font-bold text-slate-455 uppercase tracking-wider">Outcome</div>
+              <div className={`text-xl font-extrabold mt-1.5 uppercase ${isPass ? "text-emerald-650" : "text-rose-650"}`}>
                 {isPass ? "PASSED" : "FAILED"}
               </div>
             </div>
@@ -651,7 +651,7 @@ export default function ExamPortal() {
             {isSimulation ? (
               <button
                 onClick={() => router.push("/dashboard/teacher#exams")}
-                className="btn-primary w-full sm:w-auto px-6 py-2.5 text-xs font-bold flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <Home className="h-4 w-4" />
                 <span>Return to Teacher Studio</span>
@@ -659,7 +659,7 @@ export default function ExamPortal() {
             ) : (
               <button
                 onClick={() => router.push("/dashboard/student")}
-                className="btn-primary w-full sm:w-auto px-6 py-2.5 text-xs font-bold flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <Home className="h-4 w-4" />
                 <span>Return to Student Portal</span>
@@ -671,11 +671,11 @@ export default function ExamPortal() {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   // VIEW 4: LIVE DISTRACTION-FREE EXAM TAKING ARENA
-  // ══════════════════════════════════════════════════════════════════════
+  // ======================================================================
   return (
-    <div className="min-h-screen bg-[#F7F4EF] dark:bg-[#0E0D0C] flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans">
       {/* Top HUD Bar */}
       <ExamHeaderHUD
         examName={examStore.examName || "Assessment"}
@@ -693,18 +693,18 @@ export default function ExamPortal() {
       />
 
       {/* Main Exam Arena Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fadeIn">
         {/* Left / Center: Question Panel (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
           {currentQ ? (
-            <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-6 shadow-xs space-y-6">
+            <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
               {/* Question Header & Controls */}
-              <div className="flex items-center justify-between border-b border-[#E5E0D8] dark:border-[#292524] pb-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <span className="px-2.5 py-1 rounded-lg bg-[#C84B18]/10 text-[#C84B18] font-mono font-bold text-xs">
+                  <span className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 font-mono font-bold text-xs border border-blue-500/20">
                     Question {currentIndex + 1} of {examStore.questions.length}
                   </span>
-                  <span className="text-xs text-[#716D67] font-semibold">
+                  <span className="text-xs text-slate-550 font-bold uppercase tracking-wider">
                     {currentQ.marks || 1} Mark{currentQ.marks > 1 ? "s" : ""}
                   </span>
                 </div>
@@ -715,10 +715,10 @@ export default function ExamPortal() {
                     onClick={() =>
                       setFlagged((prev) => ({ ...prev, [currentQ.id]: !prev[currentQ.id] }))
                     }
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border cursor-pointer ${
                       flagged[currentQ.id]
-                        ? "bg-purple-100 dark:bg-purple-950/40 border-purple-300 text-purple-900 dark:text-purple-300"
-                        : "border-[#E5E0D8] dark:border-[#292524] text-[#716D67] hover:text-[#242321] dark:hover:text-white"
+                        ? "bg-purple-500/10 dark:bg-purple-950/40 border-purple-300 text-purple-750 dark:text-purple-300"
+                        : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                     }`}
                   >
                     <Flag className="h-3.5 w-3.5" />
@@ -728,7 +728,7 @@ export default function ExamPortal() {
               </div>
 
               {/* Question Stem (MathText LaTeX support) */}
-              <div className="text-sm sm:text-base font-medium text-[#242321] dark:text-[#F5F5F4] leading-relaxed">
+              <div className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white leading-relaxed">
                 <MathText text={currentQ.question_text || "No question stem provided."} />
               </div>
 
@@ -744,22 +744,22 @@ export default function ExamPortal() {
                         key={optIdx}
                         type="button"
                         onClick={() => saveAnswerState(currentQ.id, opt)}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center gap-3.5 cursor-pointer ${
+                        className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center gap-3.5 cursor-pointer ${
                           isSelected
-                            ? "bg-[#C84B18]/10 border-[#C84B18] text-[#242321] dark:text-[#F5F5F4] shadow-xs font-semibold"
-                            : "bg-[#F7F4EF]/50 dark:bg-[#141312] border-[#E5E0D8] dark:border-[#292524] text-[#716D67] dark:text-[#A8A29E] hover:border-[#C84B18]/50 hover:text-[#242321] dark:hover:text-white"
+                            ? "bg-blue-500/5 border-blue-500 text-slate-900 dark:text-white shadow-sm font-bold"
+                            : "bg-slate-50/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-blue-500/55 hover:text-slate-900 dark:hover:text-white"
                         }`}
                       >
                         <div
-                          className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 border ${
+                          className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 border transition-all ${
                             isSelected
-                              ? "bg-[#C84B18] text-white border-[#C84B18]"
-                              : "border-[#E5E0D8] dark:border-[#292524] text-[#716D67]"
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "border-slate-200 dark:border-slate-850 text-slate-500"
                           }`}
                         >
                           {letter}
                         </div>
-                        <div className="text-xs sm:text-sm flex-1">
+                        <div className="text-xs sm:text-sm flex-1 font-semibold">
                           <MathText text={opt} />
                         </div>
                       </button>
@@ -768,8 +768,8 @@ export default function ExamPortal() {
                 </div>
               ) : (
                 /* Descriptive / Subjective Answer Area */
-                <div className="space-y-2 pt-2">
-                  <label className="text-xs font-semibold text-[#716D67] uppercase">
+                <div className="space-y-2.5 pt-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                     Your Descriptive Response
                   </label>
                   <textarea
@@ -777,9 +777,9 @@ export default function ExamPortal() {
                     value={examStore.answers[currentQ.id] || ""}
                     onChange={(e) => saveAnswerState(currentQ.id, e.target.value)}
                     placeholder="Type your structured explanation, proofs, or calculations here..."
-                    className="w-full bg-[#F7F4EF] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 text-xs sm:text-sm text-[#242321] dark:text-[#F5F5F4] focus:ring-1 focus:ring-[#C84B18] focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 text-xs sm:text-sm text-slate-905 dark:text-white focus:ring-1 focus:ring-blue-500 focus:outline-none font-medium"
                   />
-                  <div className="flex justify-between text-[11px] text-[#716D67]">
+                  <div className="flex justify-between text-[10px] font-bold text-slate-450 uppercase">
                     <span>AI auto-evaluation active upon submission</span>
                     <span>{(examStore.answers[currentQ.id] || "").trim().split(/\s+/).filter(Boolean).length} words</span>
                   </div>
@@ -787,12 +787,12 @@ export default function ExamPortal() {
               )}
 
               {/* Bottom Navigation Buttons */}
-              <div className="flex items-center justify-between border-t border-[#E5E0D8] dark:border-[#292524] pt-4">
+              <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
                 <button
                   type="button"
                   disabled={currentIndex === 0}
                   onClick={() => setCurrentIndex((prev) => prev - 1)}
-                  className="px-4 py-2 rounded-xl border border-[#E5E0D8] dark:border-[#292524] text-xs font-semibold text-[#716D67] hover:text-[#242321] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all"
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 hover:text-slate-850 hover:bg-slate-55 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   <span>Previous</span>
@@ -803,7 +803,7 @@ export default function ExamPortal() {
                   <button
                     type="button"
                     onClick={() => saveAnswerState(currentQ.id, null)}
-                    className="text-[11px] font-semibold text-[#716D67] hover:text-[#C84B18] transition-all"
+                    className="text-[10px] font-bold uppercase tracking-wider text-slate-450 hover:text-blue-600 transition-all cursor-pointer"
                   >
                     Clear Selection
                   </button>
@@ -813,7 +813,7 @@ export default function ExamPortal() {
                   <button
                     type="button"
                     onClick={() => setCurrentIndex((prev) => prev + 1)}
-                    className="btn-primary px-5 py-2 text-xs font-bold flex items-center gap-1.5"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     <span>Next Question</span>
                     <ChevronRight className="h-4 w-4" />
@@ -822,7 +822,7 @@ export default function ExamPortal() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmModal(true)}
-                    className="btn-primary px-6 py-2 text-xs font-bold flex items-center gap-1.5 shadow-md"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
                   >
                     <span>Review & Submit</span>
                     <ArrowRight className="h-4 w-4" />
@@ -831,7 +831,7 @@ export default function ExamPortal() {
               </div>
             </div>
           ) : (
-            <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-12 text-center text-xs text-[#716D67]">
+            <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center text-xs text-slate-500 font-bold">
               No questions found for this assessment.
             </div>
           )}
@@ -848,17 +848,17 @@ export default function ExamPortal() {
           />
 
           {/* Quick Finish / Submit Action Card */}
-          <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-5 space-y-3 shadow-xs">
-            <h4 className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4] uppercase tracking-wider">
+          <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-5 space-y-3.5 shadow-sm">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Assessment Completion
             </h4>
-            <p className="text-[11px] text-[#716D67] dark:text-[#A8A29E]">
+            <p className="text-[11px] text-slate-500 font-medium">
               Done with all questions? Open the confirmation checklist to finalize and submit.
             </p>
             <button
               type="button"
               onClick={() => setShowConfirmModal(true)}
-              className="btn-primary w-full py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-xs"
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm cursor-pointer"
             >
               <CheckSquare className="h-4 w-4" />
               <span>Finish & Submit Exam</span>

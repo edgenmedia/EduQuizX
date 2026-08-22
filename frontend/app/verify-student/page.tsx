@@ -12,7 +12,6 @@ function VerifyStudentContent() {
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const token = searchParams.get("token");
-  const provider = searchParams.get("provider");
 
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
@@ -62,7 +61,6 @@ function VerifyStudentContent() {
   };
 
   const handleGoogleAuthorize = async () => {
-    // Simulated Google OAuth authorization popup / client token
     setLoading(true);
     try {
       const emailToAuth = verifiedEmail || prompt("Enter your Google Account email to authorize:", "student@aegeus.edu");
@@ -95,55 +93,56 @@ function VerifyStudentContent() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F7F4EF] dark:bg-[#0F0E0D] px-4 py-12 text-[#242321] dark:text-[#F5F5F4]">
-      <div className="w-full max-w-md bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-8 shadow-xl space-y-6 text-center">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-[#0b0f19] px-4 py-12 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      <div className="w-full max-w-md bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-xl space-y-6 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
         
         {/* Brand */}
         <div className="flex items-center justify-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[#C84B18] dark:bg-[#EA580C] text-white">
-            <School className="h-6 w-6" />
+          <div className="p-2.5 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20 flex items-center justify-center">
+            <School className="h-5.5 w-5.5" />
           </div>
-          <span className="font-extrabold text-xl tracking-tight">EduQuizX</span>
+          <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">EduQuizX</span>
         </div>
 
         {loading ? (
           <div className="py-12 space-y-4">
-            <div className="w-10 h-10 border-3 border-[#C84B18] dark:border-[#EA580C] border-t-transparent rounded-full animate-spin mx-auto" />
-            <h2 className="text-sm font-semibold text-[#716D67] dark:text-[#A8A29E]">Authorizing Student Profile...</h2>
+            <div className="w-10 h-10 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Authorizing Student Profile...</h2>
           </div>
         ) : success ? (
-          <div className="space-y-5 animate-fadeIn">
-            <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-800">
+          <div className="space-y-6 animate-fadeIn">
+            <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-250 dark:border-emerald-800/40 shadow-xs">
               <CheckCircle2 className="h-8 w-8" />
             </div>
 
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-[#242321] dark:text-[#F5F5F4]">Account Authorized!</h2>
-              <p className="text-xs text-[#716D67] dark:text-[#A8A29E] leading-relaxed">
-                Welcome <b>{verifiedName}</b> ({verifiedEmail}). Your student profile is verified.
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Account Authorized!</h2>
+              <p className="text-xs text-slate-550 dark:text-slate-400 leading-relaxed">
+                Welcome <b className="text-slate-950 dark:text-white font-bold">{verifiedName}</b> ({verifiedEmail}). Your student profile is verified.
               </p>
             </div>
 
             {/* Notice Card */}
-            <div className="bg-[#F0ECE4]/60 dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl p-4 text-left text-xs space-y-3">
-              <div className="flex items-center gap-2 font-semibold text-[#242321] dark:text-[#F5F5F4]">
-                <Mail className="h-4 w-4 text-[#C84B18]" />
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left text-xs space-y-3.5">
+              <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
+                <Mail className="h-4 w-4 text-blue-650" />
                 <span>Generated Password & Credentials</span>
               </div>
-              <p className="text-[11px] text-[#716D67] dark:text-[#A8A29E] leading-relaxed">
+              <p className="text-[11px] text-slate-550 dark:text-slate-400 leading-relaxed">
                 A secure portal access password has been generated and sent to your email inbox (<b>{verifiedEmail}</b>).
               </p>
 
               {generatedPassword && (
-                <div className="bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-lg p-3 space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-[#716D67] dark:text-[#A8A29E] tracking-wider">Your Student Portal Password:</div>
-                  <div className="flex items-center justify-between font-mono text-sm font-bold text-[#047857] dark:text-emerald-400">
+                <div className="bg-white dark:bg-[#131b2e] border border-slate-200/80 dark:border-slate-800/80 rounded-xl p-3.5 space-y-1.5 shadow-xs">
+                  <div className="text-[9px] uppercase font-bold text-slate-450 dark:text-slate-500 tracking-wider">Your Student Portal Password:</div>
+                  <div className="flex items-center justify-between font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
                     <span>{generatedPassword}</span>
                     <button
                       onClick={copyPassword}
-                      className="text-xs px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-all font-sans cursor-pointer"
+                      className="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-all font-sans cursor-pointer"
                     >
-                      {copiedPwd ? "Copied!" : "Copy Password"}
+                      {copiedPwd ? "Copied!" : "Copy"}
                     </button>
                   </div>
                 </div>
@@ -152,16 +151,16 @@ function VerifyStudentContent() {
 
             <div className="space-y-3 pt-2">
               <button
-                onClick={() => router.push("/")}
-                className="btn-primary w-full py-2.5 flex items-center justify-center gap-2 text-xs font-semibold"
+                onClick={() => router.push("/login")}
+                className="btn-primary w-full py-3 flex items-center justify-center gap-2 text-xs font-bold"
               >
-                <span>Sign in with Generated Password</span>
+                <span>Sign in with Password</span>
                 <ArrowRight className="h-4 w-4" />
               </button>
 
               <button
                 onClick={handleGoogleAuthorize}
-                className="w-full py-2.5 px-4 bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-lg text-xs font-semibold text-[#242321] dark:text-[#F5F5F4] hover:bg-[#F0ECE4]/50 dark:hover:bg-[#292524] flex items-center justify-center gap-2.5 transition-all shadow-xs"
+                className="w-full py-3 px-4 bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2.5 transition-all shadow-xs cursor-pointer"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -174,14 +173,14 @@ function VerifyStudentContent() {
             </div>
           </div>
         ) : (
-          <div className="space-y-5 animate-fadeIn">
-            <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto border border-rose-200 dark:border-rose-800">
+          <div className="space-y-6 animate-fadeIn">
+            <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-455 flex items-center justify-center mx-auto border border-rose-200 dark:border-rose-900/40">
               <AlertCircle className="h-8 w-8" />
             </div>
 
             <div className="space-y-1">
-              <h2 className="text-lg font-bold text-[#242321] dark:text-[#F5F5F4]">Verification Link Expired</h2>
-              <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Verification Link Expired</h2>
+              <p className="text-xs text-slate-550 dark:text-slate-400">
                 {errorMessage || "This authorization link is invalid or has already been used."}
               </p>
             </div>
@@ -189,7 +188,7 @@ function VerifyStudentContent() {
             <div className="space-y-3 pt-2">
               <button
                 onClick={handleGoogleAuthorize}
-                className="w-full py-2.5 px-4 bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-lg text-xs font-semibold text-[#242321] dark:text-[#F5F5F4] hover:bg-[#F0ECE4]/50 dark:hover:bg-[#292524] flex items-center justify-center gap-2.5 transition-all shadow-xs"
+                className="w-full py-3 px-4 bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2.5 transition-all shadow-xs cursor-pointer"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -202,7 +201,7 @@ function VerifyStudentContent() {
 
               <button
                 onClick={() => router.push("/")}
-                className="w-full py-2 text-xs font-semibold text-[#716D67] hover:text-[#242321]"
+                className="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-850 dark:hover:text-white transition-colors"
               >
                 Return to Login
               </button>
@@ -217,7 +216,7 @@ function VerifyStudentContent() {
 export default function VerifyStudentPage() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-[#F7F4EF] dark:bg-[#0F0E0D] text-xs text-[#716D67]">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-[#0b0f19] text-xs font-bold text-slate-500">
         Loading verification...
       </div>
     }>

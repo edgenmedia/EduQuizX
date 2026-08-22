@@ -320,7 +320,7 @@ export default function LoginPage() {
   const pwdStrength = getPasswordStrength(regPassword);
 
   return (
-    <div className="flex min-h-screen items-center justify-center relative overflow-hidden bg-[#F7F4EF] dark:bg-[#0F0E0D] px-4 py-8 sm:py-12 transition-colors duration-200">
+    <div className="flex min-h-screen items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#0b0f19] px-4 py-10 sm:py-16 transition-colors duration-300">
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
@@ -328,14 +328,14 @@ export default function LoginPage() {
       />
       
       {/* Subtle Ambient Decorative Circles */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#C84B18]/5 dark:bg-[#EA580C]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#C84B18]/5 dark:bg-[#EA580C]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-400/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-indigo-500/5 dark:bg-indigo-400/5 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Top Navigation Options: Guide Link & Theme Toggle */}
       <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
         <a 
           href="/guide"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-[#171615]/80 border border-[#E5E0D8] dark:border-[#292524] text-xs font-semibold text-[#C84B18] dark:text-[#EA580C] hover:underline backdrop-blur-xs shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/80 dark:bg-[#131b2e]/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 backdrop-blur-md shadow-xs transition-all"
         >
           <BookOpen className="h-3.5 w-3.5" />
           <span>← View Platform Usage Guide</span>
@@ -343,49 +343,49 @@ export default function LoginPage() {
 
         <button
           onClick={toggleTheme}
-          className="w-13 h-7 rounded-full bg-[#E5E0D8] dark:bg-[#292524] border border-[#E5E0D8] dark:border-[#292524] p-1 flex items-center shadow-xs cursor-pointer transition-colors duration-300 relative focus:outline-none"
+          className="w-12 h-7 rounded-full bg-slate-200 dark:bg-slate-800 p-0.5 flex items-center cursor-pointer transition-colors duration-300 relative focus:outline-none"
           title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
           aria-label="Toggle Theme"
         >
           <div
-            className={`w-5 h-5 rounded-full bg-white dark:bg-[#EA580C] shadow-xs border border-[#E5E0D8] dark:border-transparent transform transition-transform duration-300 flex items-center justify-center ${
-              theme === "dark" ? "translate-x-6 text-white" : "translate-x-0 text-[#C84B18]"
+            className={`w-6 h-6 rounded-full bg-white dark:bg-blue-600 shadow-md transform transition-transform duration-300 flex items-center justify-center ${
+              theme === "dark" ? "translate-x-5 text-white" : "translate-x-0 text-amber-500"
             }`}
           >
-            {theme === "light" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+            {theme === "light" ? <Sun className="h-3.5 w-3.5" style={{ color: '#d97706' }} /> : <Moon className="h-3.5 w-3.5" />}
           </div>
         </button>
       </div>
 
-      <div className="w-full max-w-[460px] z-10 space-y-5 mt-8">
+      <div className="w-full max-w-[460px] z-10 space-y-6 mt-8">
         
         {/* Logo & Platform Headline */}
         <div className="flex justify-center items-center gap-3">
-          <div className="p-3 rounded-xl bg-[#C84B18] dark:bg-[#EA580C] text-white shadow-md shadow-[#C84B18]/15">
+          <div className="p-3 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
             <School className="h-7 w-7" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-[#242321] dark:text-[#F5F5F4] leading-none">EduQuizX</h1>
-            <p className="text-xs text-[#716D67] dark:text-[#A8A29E] font-medium tracking-wide mt-1">Autonomous Examination Portal</p>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-none">EduQuizX</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-bold tracking-wide mt-1.5 uppercase">Autonomous Examination Portal</p>
           </div>
         </div>
 
         {/* Main Authentication Card */}
-        <div className="bg-white dark:bg-[#171615] rounded-2xl p-7 sm:p-8 border border-[#E5E0D8] dark:border-[#292524] shadow-sm relative overflow-hidden space-y-5">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#C84B18] via-amber-600 to-[#C84B18]" />
+        <div className="bg-white dark:bg-[#131b2e] rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden space-y-6">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
           
           {/* Auth Mode Toggle Pill: Sign In vs Create Account */}
-          <div className="flex p-1 bg-[#F0ECE4]/60 dark:bg-[#1D1B19] rounded-xl border border-[#E5E0D8] dark:border-[#292524]">
+          <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
             <button
               type="button"
               onClick={() => {
                 setAuthMode("signin");
                 setError(null);
               }}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 authMode === "signin"
-                  ? "bg-white dark:bg-[#292524] text-[#242321] dark:text-[#F5F5F4] shadow-xs"
-                  : "text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-white"
+                  ? "bg-white dark:bg-[#1e293b] text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
               Sign In
@@ -396,10 +396,10 @@ export default function LoginPage() {
                 setAuthMode("signup");
                 setError(null);
               }}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 authMode === "signup"
-                  ? "bg-[#C84B18] dark:bg-[#EA580C] text-white shadow-xs"
-                  : "text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-white"
+                  ? "bg-blue-600 text-white shadow-xs"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
               Create Account
@@ -407,10 +407,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-[#242321] dark:text-[#F5F5F4] tracking-tight">
-              {authMode === "signin" ? "Portal Sign In" : "Create New Account"}
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {authMode === "signin" ? "Welcome Back" : "Create New Account"}
             </h2>
-            <p className="text-[#716D67] dark:text-[#A8A29E] text-xs mt-1">
+            <p className="text-slate-500 dark:text-slate-400 text-xs mt-2 leading-relaxed">
               {authMode === "signin" 
                 ? "Sign in to access your assessment workspace and analytics." 
                 : "Get started with your personalized quiz creation and proctoring workspace."}
@@ -418,21 +418,19 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="flex gap-2 items-center p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-xs">
+            <div className="flex gap-2.5 items-center p-4 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 text-rose-700 dark:text-rose-400 text-xs animate-fadeIn">
               <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-              <span>{error}</span>
+              <span className="font-semibold">{error}</span>
             </div>
           )}
 
-          {/* ═══════════════════════════════════════════════════════════════
-              SIGN IN FORM
-              ═══════════════════════════════════════════════════════════════ */}
+          {/* SIGN IN FORM */}
           {authMode === "signin" ? (
             <form onSubmit={handleSignInSubmit} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
-                  User Name / Email
+                <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
+                  Username or Email
                 </label>
                 <div className="relative">
                   <input
@@ -441,16 +439,16 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="user@aegeus.edu"
-                    className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl pl-9.5 pr-3.5 py-2.5 text-sm text-[#242321] dark:text-[#F5F5F4] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30 focus:border-[#C84B18] transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
                   />
-                  <Mail className="h-4 w-4 text-[#A8A29E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Mail className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 </div>
               </div>
 
               {/* Password Field */}
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
                     Password
                   </label>
                   <button
@@ -461,7 +459,7 @@ export default function LoginPage() {
                       setForgotError(null);
                       setForgotModalOpen(true);
                     }}
-                    className="text-xs font-semibold text-[#C84B18] dark:text-[#EA580C] hover:underline cursor-pointer"
+                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                   >
                     Forgot Password?
                   </button>
@@ -473,13 +471,13 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl pl-9.5 pr-10 py-2.5 text-sm text-[#242321] dark:text-[#F5F5F4] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30 focus:border-[#C84B18] transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
                   />
-                  <Lock className="h-4 w-4 text-[#A8A29E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Lock className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A8A29E] hover:text-[#242321] dark:hover:text-white cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -488,14 +486,14 @@ export default function LoginPage() {
 
               {/* Remember Me Option */}
               <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 text-xs font-semibold text-[#716D67] dark:text-[#A8A29E] cursor-pointer select-none">
+                <label className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="rounded border-[#E5E0D8] dark:border-[#292524] text-[#C84B18] focus:ring-[#C84B18]/30 cursor-pointer h-3.5 w-3.5"
+                    className="rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500/30 cursor-pointer h-4 w-4"
                   />
-                  <span>Remember my login email</span>
+                  <span>Remember my email</span>
                 </label>
               </div>
 
@@ -503,57 +501,55 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#C84B18] hover:bg-[#B33E0F] dark:bg-[#EA580C] dark:hover:bg-[#C2410C] text-white font-bold rounded-xl py-3 text-xs transition-all shadow-md shadow-[#C84B18]/20 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3 text-xs transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {loading ? "Signing in..." : "Sign In to Portal"}
                 {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
           ) : (
-            /* ═══════════════════════════════════════════════════════════════
-               CREATE ACCOUNT (SIGN UP) FORM
-               ═══════════════════════════════════════════════════════════════ */
+            /* CREATE ACCOUNT (SIGN UP) FORM */
             <form onSubmit={handleRegisterSubmit} className="space-y-4">
               {/* Role Selection Tabs */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
-                  I am registering as an
+                <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
+                  I am registering as a
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setRegRole("teacher")}
-                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       regRole === "teacher"
-                        ? "bg-[#C84B18]/10 dark:bg-[#EA580C]/15 border-[#C84B18] dark:border-[#EA580C] text-[#C84B18] dark:text-[#EA580C]"
-                        : "bg-[#FBF9F5] dark:bg-[#1D1B19] border-[#E5E0D8] dark:border-[#292524] text-[#716D67] dark:text-[#A8A29E]"
+                        ? "bg-blue-500/10 dark:bg-blue-400/10 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400"
+                        : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400"
                     }`}
                   >
-                    <div className="font-bold text-xs flex items-center gap-1.5">
-                      <span>🎓 Educator / Teacher</span>
+                    <div className="font-extrabold text-xs">
+                      🎓 Educator
                     </div>
-                    <div className="text-[10px] opacity-75 mt-0.5">Author quizzes & gradebooks</div>
+                    <div className="text-[9px] opacity-75 mt-0.5">Author quizzes & review gradebooks</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setRegRole("student")}
-                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       regRole === "student"
-                        ? "bg-[#C84B18]/10 dark:bg-[#EA580C]/15 border-[#C84B18] dark:border-[#EA580C] text-[#C84B18] dark:text-[#EA580C]"
-                        : "bg-[#FBF9F5] dark:bg-[#1D1B19] border-[#E5E0D8] dark:border-[#292524] text-[#716D67] dark:text-[#A8A29E]"
+                        ? "bg-blue-500/10 dark:bg-blue-400/10 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400"
+                        : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400"
                     }`}
                   >
-                    <div className="font-bold text-xs flex items-center gap-1.5">
-                      <span>🎒 Student / Candidate</span>
+                    <div className="font-extrabold text-xs">
+                      🎒 Student
                     </div>
-                    <div className="text-[10px] opacity-75 mt-0.5">Attempt tests & track results</div>
+                    <div className="text-[9px] opacity-75 mt-0.5">Attempt tests & track results</div>
                   </button>
                 </div>
               </div>
 
               {/* Full Name Field */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
                   Full Name
                 </label>
                 <input
@@ -562,13 +558,13 @@ export default function LoginPage() {
                   value={regFullName}
                   onChange={(e) => setRegFullName(e.target.value)}
                   placeholder="e.g. Dr. Sarah Jenkins"
-                  className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl px-3.5 py-2.5 text-sm text-[#242321] dark:text-[#F5F5F4] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30 focus:border-[#C84B18] transition-all font-medium"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
                 />
               </div>
 
               {/* Email Field */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
                   Email Address
                 </label>
                 <div className="relative">
@@ -578,21 +574,21 @@ export default function LoginPage() {
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
                     placeholder="sarah@university.edu"
-                    className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl pl-9.5 pr-3.5 py-2.5 text-sm text-[#242321] dark:text-[#F5F5F4] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30 focus:border-[#C84B18] transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
                   />
-                  <Mail className="h-4 w-4 text-[#A8A29E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Mail className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 </div>
               </div>
 
               {/* Password Field with Strength Indicator */}
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
                     Create Password
                   </label>
                   {regPassword && (
-                    <span className="text-[10px] font-bold text-[#716D67] dark:text-[#A8A29E]">
-                      Strength: <span className="font-semibold">{pwdStrength.text}</span>
+                    <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase">
+                      Strength: <span className="font-bold">{pwdStrength.text}</span>
                     </span>
                   )}
                 </div>
@@ -603,25 +599,25 @@ export default function LoginPage() {
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl pl-9.5 pr-10 py-2.5 text-sm text-[#242321] dark:text-[#F5F5F4] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30 focus:border-[#C84B18] transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
                   />
-                  <Lock className="h-4 w-4 text-[#A8A29E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Lock className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <button
                     type="button"
                     onClick={() => setRegShowPassword(!regShowPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A8A29E] hover:text-[#242321] dark:hover:text-white cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                   >
                     {regShowPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {/* Strength Meter Bar */}
                 {regPassword && (
-                  <div className="grid grid-cols-4 gap-1 pt-1">
+                  <div className="grid grid-cols-4 gap-1 pt-1.5">
                     {[1, 2, 3, 4].map((step) => (
                       <div
                         key={step}
                         className={`h-1 rounded-full transition-all ${
-                          step <= pwdStrength.score ? pwdStrength.color : "bg-[#E5E0D8] dark:bg-[#292524]"
+                          step <= pwdStrength.score ? pwdStrength.color : "bg-slate-200 dark:bg-slate-800"
                         }`}
                       />
                     ))}
@@ -631,7 +627,7 @@ export default function LoginPage() {
 
               {/* Confirm Password Field */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -641,9 +637,9 @@ export default function LoginPage() {
                     value={regConfirmPassword}
                     onChange={(e) => setRegConfirmPassword(e.target.value)}
                     placeholder="Re-enter your password"
-                    className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl pl-9.5 pr-3.5 py-2.5 text-sm text-[#242321] dark:text-[#F5F5F4] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30 focus:border-[#C84B18] transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium"
                   />
-                  <KeyRound className="h-4 w-4 text-[#A8A29E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <KeyRound className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 </div>
               </div>
 
@@ -651,7 +647,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#C84B18] hover:bg-[#B33E0F] dark:bg-[#EA580C] dark:hover:bg-[#C2410C] text-white font-bold rounded-xl py-3 text-xs transition-all shadow-md shadow-[#C84B18]/20 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-3 text-xs transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {loading ? "Creating Account..." : "Create Account & Get Started"}
                 {!loading && <ArrowRight className="h-4 w-4" />}
@@ -661,11 +657,11 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="relative flex items-center justify-center">
-            <div className="border-t border-[#E5E0D8] dark:border-[#292524] w-full" />
-            <span className="bg-white dark:bg-[#171615] px-3 text-[11px] font-semibold text-[#716D67] dark:text-[#A8A29E] uppercase tracking-wider shrink-0">
+            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+            <span className="bg-white dark:bg-[#131b2e] px-3 text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider shrink-0">
               or {authMode === "signup" ? "sign up with" : "continue with"}
             </span>
-            <div className="border-t border-[#E5E0D8] dark:border-[#292524] w-full" />
+            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
           </div>
 
           {/* Google Identity Services Container */}
@@ -674,7 +670,7 @@ export default function LoginPage() {
           </div>
 
           {/* Bottom Switcher: Sign In vs Create Account */}
-          <div className="text-center text-xs text-[#716D67] dark:text-[#A8A29E] pt-1">
+          <div className="text-center text-xs text-slate-550 dark:text-slate-400 pt-1">
             {authMode === "signin" ? (
               <p>
                 Don&apos;t have an account?{" "}
@@ -684,7 +680,7 @@ export default function LoginPage() {
                     setAuthMode("signup");
                     setError(null);
                   }}
-                  className="font-bold text-[#C84B18] dark:text-[#EA580C] hover:underline cursor-pointer"
+                  className="font-bold text-blue-650 dark:text-blue-400 hover:underline cursor-pointer"
                 >
                   Create one now →
                 </button>
@@ -698,7 +694,7 @@ export default function LoginPage() {
                     setAuthMode("signin");
                     setError(null);
                   }}
-                  className="font-bold text-[#C84B18] dark:text-[#EA580C] hover:underline cursor-pointer"
+                  className="font-bold text-blue-650 dark:text-blue-400 hover:underline cursor-pointer"
                 >
                   Sign in here →
                 </button>
@@ -707,24 +703,24 @@ export default function LoginPage() {
           </div>
 
           {/* Direct Exam Code Gateway Toggle */}
-          <div className="pt-2 border-t border-[#E5E0D8]/60 dark:border-[#292524]/60">
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
             {!showExamCodeGateway ? (
               <button
                 type="button"
                 onClick={() => setShowExamCodeGateway(true)}
-                className="w-full text-center text-xs font-semibold text-[#716D67] dark:text-[#A8A29E] hover:text-[#C84B18] dark:hover:text-[#EA580C] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full text-center text-xs font-semibold text-slate-550 dark:text-slate-400 hover:text-blue-650 dark:hover:text-blue-400 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <FileCode2 className="h-3.5 w-3.5" />
                 <span>Taking a Test? Enter Exam Code</span>
               </button>
             ) : (
-              <form onSubmit={handleDirectExamJump} className="space-y-2 bg-[#FBF9F5] dark:bg-[#1D1B19] p-3 rounded-xl border border-[#E5E0D8] dark:border-[#292524]">
+              <form onSubmit={handleDirectExamJump} className="space-y-2.5 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 animate-fadeIn">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#57534E] dark:text-[#A8A29E] uppercase tracking-wider">Candidate Direct Access</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Candidate Direct Access</span>
                   <button
                     type="button"
                     onClick={() => setShowExamCodeGateway(false)}
-                    className="text-[#716D67] hover:text-[#242321] dark:hover:text-white"
+                    className="text-slate-400 hover:text-slate-650 dark:hover:text-white"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -736,11 +732,11 @@ export default function LoginPage() {
                     value={examCodeInput}
                     onChange={(e) => setExamCodeInput(e.target.value)}
                     placeholder="e.g. ex-com-1234"
-                    className="flex-1 bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-lg px-2.5 py-1.5 text-xs text-[#242321] dark:text-[#F5F5F4] focus:outline-none focus:ring-1 focus:ring-[#C84B18]"
+                    className="flex-1 bg-white dark:bg-[#131b2e] border border-slate-205 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                   <button
                     type="submit"
-                    className="px-3 py-1.5 bg-[#C84B18] text-white rounded-lg text-xs font-bold hover:bg-[#B33E0F] transition-all shrink-0 cursor-pointer"
+                    className="px-3.5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shrink-0 cursor-pointer"
                   >
                     Take Exam
                   </button>
@@ -751,84 +747,84 @@ export default function LoginPage() {
         </div>
         
         {/* Footer Security Badge */}
-        <div className="flex items-center justify-center gap-1.5 text-[#716D67] dark:text-[#A8A29E] text-xs">
-          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-          <span>Secured with Aegis Multi-factor & Anti-cheat Telemetry.</span>
+        <div className="flex items-center justify-center gap-1.5 text-slate-450 dark:text-slate-500 text-xs">
+          <ShieldCheck className="h-4.5 w-4.5 text-emerald-600" />
+          <span>Secured with Aegis Multi-factor & Anti-cheat Telemetry</span>
         </div>
       </div>
 
-      {/* ═══════ FORGOT PASSWORD MODAL ═══════ */}
+      {/* FORGOT PASSWORD MODAL */}
       {forgotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 relative">
             <button
               onClick={() => setForgotModalOpen(false)}
-              className="absolute top-4 right-4 text-[#716D67] hover:text-[#242321] dark:hover:text-white p-1 rounded-lg hover:bg-[#F0ECE4]/50 dark:hover:bg-[#292524]"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#C84B18]/10 text-[#C84B18] dark:bg-[#EA580C]/15 dark:text-[#EA580C] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-400 flex items-center justify-center font-bold">
                 <KeyRound className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#242321] dark:text-[#F5F5F4]">Password Recovery</h3>
-                <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">Receive a tokenized reset password link</p>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Password Recovery</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Receive a recovery link via email</p>
               </div>
             </div>
 
             {forgotMessage ? (
-              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs space-y-2">
+              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-250 dark:border-emerald-800/40 text-emerald-855 dark:text-emerald-450 text-xs space-y-2 animate-fadeIn">
                 <div className="flex items-center gap-2 font-bold">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-650 shrink-0" />
                   <span>Recovery Dispatched</span>
                 </div>
                 <p>{forgotMessage}</p>
                 <button
                   type="button"
                   onClick={() => setForgotModalOpen(false)}
-                  className="mt-2 w-full py-2 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-700"
+                  className="mt-2 w-full py-2 bg-emerald-650 text-white rounded-lg font-bold text-xs hover:bg-emerald-700"
                 >
                   Return to Sign In
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleForgotPassword} className="space-y-3.5">
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 {forgotError && (
-                  <div className="p-3 rounded-lg bg-rose-50 text-rose-700 text-xs border border-rose-200">
+                  <div className="p-3.5 rounded-xl bg-rose-50 text-rose-700 text-xs border border-rose-200">
                     {forgotError}
                   </div>
                 )}
                 
-                <p className="text-xs text-[#716D67] dark:text-[#A8A29E] leading-relaxed">
-                  Enter your verified student or faculty email address below. We will send you a tokenized password reset link immediately.
+                <p className="text-xs text-slate-550 dark:text-slate-450 leading-relaxed">
+                  Enter your registered student or educator email address below. We will send you a password recovery link shortly.
                 </p>
 
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-[#57534E] dark:text-[#A8A29E] uppercase">Registered Email</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-bold text-slate-650 dark:text-slate-400 uppercase tracking-wider">Registered Email</label>
                   <input
                     type="email"
                     required
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="e.g. teacher@aegeus.edu"
-                    className="w-full bg-[#FBF9F5] dark:bg-[#1D1B19] border border-[#E5E0D8] dark:border-[#292524] rounded-xl px-3 py-2 text-sm text-[#242321] dark:text-[#F5F5F4] focus:outline-none focus:ring-2 focus:ring-[#C84B18]/30"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-202 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setForgotModalOpen(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-[#E5E0D8] dark:border-[#292524] text-xs font-semibold text-[#716D67] hover:bg-[#F0ECE4]/50"
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={forgotLoading}
-                    className="flex-1 py-2.5 bg-[#C84B18] hover:bg-[#B33E0F] text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 disabled:opacity-50"
                   >
                     {forgotLoading ? "Dispatching..." : "Send Reset Link"}
                   </button>
@@ -838,8 +834,6 @@ export default function LoginPage() {
           </div>
         </div>
       )}
-
-      {/* ═══════ FORGOT PASSWORD MODAL ═══════ */}
     </div>
   );
 }

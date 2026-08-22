@@ -11,7 +11,7 @@ import {
   Menu, 
   X, 
   LogOut, 
-  Settings, 
+  Sliders, 
   Bell, 
   ExternalLink,
   UserCheck,
@@ -24,14 +24,10 @@ import {
   FileText,
   Users,
   BarChart2,
-  Sliders,
   ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
-  ArrowLeft,
-  Sparkles,
-  ShieldAlert,
-  ChevronRight
+  ArrowLeft
 } from "lucide-react";
 
 export default function DashboardLayout({
@@ -206,40 +202,36 @@ export default function DashboardLayout({
     }
   };
 
-
-
   return (
-    <div className="flex h-screen bg-[#FAF8F5] dark:bg-[#0F0E0D] overflow-hidden text-[#242321] dark:text-[#F5F5F4]">
+    <div className="flex h-screen bg-slate-50 dark:bg-[#0b0f19] overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-300">
       
       {/* Mobile Backdrop Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-fadeIn"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* ══════════════════════════════════════════════════════
-          SIDEBAR NAVIGATION (Expanded: 260px | Collapsed: 72px)
-         ══════════════════════════════════════════════════════ */}
+      {/* SIDEBAR NAVIGATION */}
       <aside 
-        className={`fixed md:static inset-y-0 left-0 z-50 bg-[#FFFFFF] dark:bg-[#171615] border-r border-[#E5E0D8] dark:border-[#292524] flex flex-col shrink-0 transition-all duration-300 ease-in-out shadow-sm md:shadow-none ${
+        className={`fixed md:static inset-y-0 left-0 z-50 bg-white dark:bg-[#131b2e] border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 transition-all duration-300 ease-in-out shadow-sm md:shadow-none ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        } ${sidebarCollapsed ? "w-[72px]" : "w-64"}`}
+        } ${sidebarCollapsed ? "w-[76px]" : "w-64"}`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-4 border-b border-[#E5E0D8] dark:border-[#292524] flex items-center justify-between shrink-0 bg-[#FFFFFF] dark:bg-[#171615]">
+        <div className="h-16 px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-[#131b2e]">
           <div className={`flex items-center gap-3 overflow-hidden ${sidebarCollapsed ? "justify-center w-full" : ""}`}>
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#C84B18] to-[#EA580C] text-white flex items-center justify-center shadow-md shadow-[#C84B18]/20 shrink-0">
-              <School className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+              <School className="h-5.5 w-5.5" />
             </div>
             {!sidebarCollapsed && (
               <div className="truncate">
                 <div className="flex items-center gap-1.5">
-                  <h1 className="font-extrabold text-sm text-[#242321] dark:text-[#F5F5F4] tracking-tight truncate">EduQuizX</h1>
-                  <span className="px-1.5 py-0.2 text-[9px] font-bold bg-[#C84B18]/10 text-[#C84B18] dark:bg-[#EA580C]/15 dark:text-[#EA580C] rounded">PRO</span>
+                  <h1 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight truncate">EduQuizX</h1>
+                  <span className="px-1.5 py-0.2 text-[9px] font-extrabold bg-blue-600/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-400 rounded uppercase">PRO</span>
                 </div>
-                <p className="text-[11px] text-[#716D67] dark:text-[#A8A29E] mt-0.5 font-medium truncate">Academic Studio</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase truncate">Academic Hub</p>
               </div>
             )}
           </div>
@@ -247,7 +239,7 @@ export default function DashboardLayout({
           {!sidebarCollapsed && (
             <button 
               onClick={toggleSidebarCollapsed}
-              className="hidden md:flex p-1.5 rounded-lg text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A] transition-colors cursor-pointer"
+              className="hidden md:flex p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title="Collapse Sidebar"
             >
               <PanelLeftClose className="h-4 w-4" />
@@ -257,7 +249,7 @@ export default function DashboardLayout({
           {/* Mobile Close Button */}
           <button 
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden p-1.5 rounded-lg text-[#716D67] hover:text-[#242321] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A] cursor-pointer"
+            className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -265,10 +257,10 @@ export default function DashboardLayout({
 
         {/* Collapsed Mode Expand Button */}
         {sidebarCollapsed && (
-          <div className="hidden md:flex justify-center pt-2 pb-1 border-b border-[#E5E0D8] dark:border-[#292524]">
+          <div className="hidden md:flex justify-center pt-2 pb-1 border-b border-slate-200 dark:border-slate-800">
             <button
               onClick={toggleSidebarCollapsed}
-              className="p-1.5 rounded-lg text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A] transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title="Expand Sidebar"
             >
               <PanelLeftOpen className="h-4 w-4" />
@@ -281,11 +273,11 @@ export default function DashboardLayout({
           {/* SECTION: CREATOR STUDIO OR STUDENT PORTAL */}
           <div className="space-y-1.5">
             {!sidebarCollapsed ? (
-              <div className="text-[10px] font-bold text-[#8C827A] dark:text-[#8C827A] px-3 mb-2 uppercase tracking-widest">
-                {pathname === "/dashboard/teacher" ? "Creator Studio" : "Student Portal"}
+              <div className="text-[9px] font-bold text-slate-400 dark:text-slate-500 px-3 mb-2 uppercase tracking-widest">
+                {pathname === "/dashboard/teacher" ? "Creator Studio" : "Candidate Portal"}
               </div>
             ) : (
-              <div className="w-6 h-0.5 bg-[#E5E0D8] dark:bg-[#292524] mx-auto mb-2 rounded" />
+              <div className="w-6 h-0.5 bg-slate-200 dark:bg-slate-800 mx-auto mb-2 rounded" />
             )}
 
             <div className="space-y-1">
@@ -294,18 +286,18 @@ export default function DashboardLayout({
                   {/* Assessments Tab */}
                   <button 
                     onClick={() => navToTab("exams")}
-                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       sidebarCollapsed ? "justify-center px-0" : ""
                     } ${
                       currentTab === "exams"
-                        ? "bg-[#C84B18] text-white shadow-sm shadow-[#C84B18]/25"
-                        : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+                        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
+                        : "text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <GraduationCap className={`h-4.5 w-4.5 shrink-0 ${currentTab === "exams" ? "text-white" : "text-[#716D67] group-hover:text-[#C84B18]"}`} />
+                    <GraduationCap className={`h-4.5 w-4.5 shrink-0 ${currentTab === "exams" ? "text-white" : "text-slate-400 group-hover:text-blue-600"}`} />
                     {!sidebarCollapsed && <span>Assessments</span>}
                     {sidebarCollapsed && (
-                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                         Assessments
                       </span>
                     )}
@@ -314,18 +306,18 @@ export default function DashboardLayout({
                   {/* Create Quiz Tab */}
                   <button 
                     onClick={() => navToTab("create")}
-                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       sidebarCollapsed ? "justify-center px-0" : ""
                     } ${
                       currentTab === "create"
-                        ? "bg-[#C84B18] text-white shadow-sm shadow-[#C84B18]/25"
-                        : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+                        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
+                        : "text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <FileText className={`h-4.5 w-4.5 shrink-0 ${currentTab === "create" ? "text-white" : "text-[#716D67] group-hover:text-[#C84B18]"}`} />
+                    <FileText className={`h-4.5 w-4.5 shrink-0 ${currentTab === "create" ? "text-white" : "text-slate-400 group-hover:text-blue-600"}`} />
                     {!sidebarCollapsed && <span>Create Quiz</span>}
                     {sidebarCollapsed && (
-                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                         Create Quiz Wizard
                       </span>
                     )}
@@ -334,18 +326,18 @@ export default function DashboardLayout({
                   {/* Question Bank Tab */}
                   <button 
                     onClick={() => navToTab("bank")}
-                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       sidebarCollapsed ? "justify-center px-0" : ""
                     } ${
                       currentTab === "bank"
-                        ? "bg-[#C84B18] text-white shadow-sm shadow-[#C84B18]/25"
-                        : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+                        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
+                        : "text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <Layers className={`h-4.5 w-4.5 shrink-0 ${currentTab === "bank" ? "text-white" : "text-[#716D67] group-hover:text-[#C84B18]"}`} />
+                    <Layers className={`h-4.5 w-4.5 shrink-0 ${currentTab === "bank" ? "text-white" : "text-slate-400 group-hover:text-blue-600"}`} />
                     {!sidebarCollapsed && <span>Question Bank</span>}
                     {sidebarCollapsed && (
-                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                         Question Bank
                       </span>
                     )}
@@ -354,18 +346,18 @@ export default function DashboardLayout({
                   {/* Knowledge Base Tab */}
                   <button 
                     onClick={() => navToTab("kb")}
-                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       sidebarCollapsed ? "justify-center px-0" : ""
                     } ${
                       currentTab === "kb"
-                        ? "bg-[#C84B18] text-white shadow-sm shadow-[#C84B18]/25"
-                        : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+                        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
+                        : "text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <BookOpen className={`h-4.5 w-4.5 shrink-0 ${currentTab === "kb" ? "text-white" : "text-[#716D67] group-hover:text-[#C84B18]"}`} />
+                    <BookOpen className={`h-4.5 w-4.5 shrink-0 ${currentTab === "kb" ? "text-white" : "text-slate-400 group-hover:text-blue-600"}`} />
                     {!sidebarCollapsed && <span>Knowledge Base</span>}
                     {sidebarCollapsed && (
-                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                         Knowledge Base (RAG)
                       </span>
                     )}
@@ -374,18 +366,18 @@ export default function DashboardLayout({
                   {/* Student Directory Tab */}
                   <button 
                     onClick={() => navToTab("students")}
-                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       sidebarCollapsed ? "justify-center px-0" : ""
                     } ${
                       currentTab === "students"
-                        ? "bg-[#C84B18] text-white shadow-sm shadow-[#C84B18]/25"
-                        : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+                        ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
+                        : "text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <Users className={`h-4.5 w-4.5 shrink-0 ${currentTab === "students" ? "text-white" : "text-[#716D67] group-hover:text-[#C84B18]"}`} />
-                    {!sidebarCollapsed && <span>Student Directory</span>}
+                    <Users className={`h-4.5 w-4.5 shrink-0 ${currentTab === "students" ? "text-white" : "text-slate-400 group-hover:text-blue-600"}`} />
+                    {!sidebarCollapsed && <span>Student Roster</span>}
                     {sidebarCollapsed && (
-                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                      <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                         Student Directories & Cohorts
                       </span>
                     )}
@@ -395,14 +387,14 @@ export default function DashboardLayout({
                 <a
                   href="/dashboard/student"
                   onClick={closeSidebarMobile}
-                  className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-[#C84B18]/10 text-[#C84B18] dark:bg-[#EA580C]/15 dark:text-[#EA580C] border border-[#C84B18]/20 transition-all ${
+                  className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-650 dark:bg-blue-400/15 dark:text-blue-400 border border-blue-500/20 transition-all ${
                     sidebarCollapsed ? "justify-center px-0" : ""
                   }`}
                 >
                   <UserCheck className="h-4.5 w-4.5 shrink-0" />
                   {!sidebarCollapsed && <span>Student Portal</span>}
                   {sidebarCollapsed && (
-                    <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                    <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                       Student Exam Portal
                     </span>
                   )}
@@ -415,28 +407,28 @@ export default function DashboardLayout({
           {pathname === "/dashboard/teacher" && (
             <div className="space-y-1.5">
               {!sidebarCollapsed ? (
-                <div className="text-[10px] font-bold text-[#8C827A] dark:text-[#8C827A] px-3 mb-2 uppercase tracking-widest">
+                <div className="text-[9px] font-bold text-slate-400 dark:text-slate-500 px-3 mb-2 uppercase tracking-widest">
                   Analytics & Reports
                 </div>
               ) : (
-                <div className="w-6 h-0.5 bg-[#E5E0D8] dark:bg-[#292524] mx-auto mb-2 rounded" />
+                <div className="w-6 h-0.5 bg-slate-200 dark:bg-slate-800 mx-auto mb-2 rounded" />
               )}
               
               <div className="space-y-1">
                 <button 
                   onClick={() => navToTab("reports")}
-                  className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     sidebarCollapsed ? "justify-center px-0" : ""
                   } ${
                     currentTab === "reports"
-                      ? "bg-[#C84B18] text-white shadow-sm shadow-[#C84B18]/25"
-                      : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A]"
+                      ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
+                      : "text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
-                  <BarChart2 className={`h-4.5 w-4.5 shrink-0 ${currentTab === "reports" ? "text-white" : "text-[#716D67] group-hover:text-[#C84B18]"}`} />
-                  {!sidebarCollapsed && <span>Results & Gradebook</span>}
+                  <BarChart2 className={`h-4.5 w-4.5 shrink-0 ${currentTab === "reports" ? "text-white" : "text-slate-400 group-hover:text-blue-600"}`} />
+                  {!sidebarCollapsed && <span>Gradebook Analytics</span>}
                   {sidebarCollapsed && (
-                    <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                    <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                       Results & Gradebook Analytics
                     </span>
                   )}
@@ -448,24 +440,24 @@ export default function DashboardLayout({
           {/* SECTION: SYSTEM & PREFERENCES */}
           <div className="space-y-1.5">
             {!sidebarCollapsed ? (
-              <div className="text-[10px] font-bold text-[#8C827A] dark:text-[#8C827A] px-3 mb-2 uppercase tracking-widest">
-                Preferences
+              <div className="text-[9px] font-bold text-slate-400 dark:text-slate-500 px-3 mb-2 uppercase tracking-widest">
+                System
               </div>
             ) : (
-              <div className="w-6 h-0.5 bg-[#E5E0D8] dark:bg-[#292524] mx-auto mb-2 rounded" />
+              <div className="w-6 h-0.5 bg-slate-200 dark:bg-slate-800 mx-auto mb-2 rounded" />
             )}
 
             <div className="space-y-1">
               <button 
                 onClick={() => { closeSidebarMobile(); setSettingsModalOpen(true); }}
-                className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#57534E] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A] transition-all cursor-pointer ${
+                className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-650 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer ${
                   sidebarCollapsed ? "justify-center px-0" : ""
                 }`}
               >
-                <Sliders className="h-4.5 w-4.5 shrink-0 text-[#716D67] group-hover:text-[#C84B18]" />
+                <Sliders className="h-4.5 w-4.5 shrink-0 text-slate-400 group-hover:text-blue-600" />
                 {!sidebarCollapsed && <span>Settings & Profile</span>}
                 {sidebarCollapsed && (
-                  <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                  <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                     System & Profile Settings
                   </span>
                 )}
@@ -473,11 +465,11 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* SECTION: DEVELOPER TOOLS (Collapsible) */}
-          <div className="pt-2 border-t border-[#E5E0D8] dark:border-[#292524]">
+          {/* SECTION: DEVELOPER TOOLS */}
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
             <button 
               onClick={() => setDevToolsOpen(!devToolsOpen)} 
-              className={`w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] rounded-lg hover:bg-[#F7F4EF] dark:hover:bg-[#201D1A] transition-colors cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-slate-550 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 sidebarCollapsed ? "justify-center px-0" : ""
               }`}
               title="Developer Tools"
@@ -493,7 +485,7 @@ export default function DashboardLayout({
               ) : (
                 <div className="group relative">
                   <Layers className="h-4 w-4" />
-                  <span className="absolute left-full ml-3 px-2.5 py-1 bg-[#1F1E1D] text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+                  <span className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
                     Developer Tools
                   </span>
                 </div>
@@ -501,12 +493,12 @@ export default function DashboardLayout({
             </button>
 
             {devToolsOpen && !sidebarCollapsed && (
-              <div className="mt-1 space-y-1 pl-4 border-l border-[#E5E0D8] dark:border-[#292524] ml-3 text-[11px]">
+              <div className="mt-1.5 space-y-1 pl-4 border-l border-slate-200 dark:border-slate-800 ml-3 text-[10px]">
                 <a 
                   href={`${API_BASE}/static/index.html`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="flex items-center justify-between px-2 py-1 text-[#716D67] dark:text-[#A8A29E] hover:text-[#C84B18] rounded transition-colors"
+                  className="flex items-center justify-between px-2.5 py-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 rounded transition-colors"
                 >
                   <span>Static Creator UI</span>
                   <ExternalLink className="h-3 w-3" />
@@ -515,7 +507,7 @@ export default function DashboardLayout({
                   href={`${API_BASE}/static/exam.html`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="flex items-center justify-between px-2 py-1 text-[#716D67] dark:text-[#A8A29E] hover:text-[#C84B18] rounded transition-colors"
+                  className="flex items-center justify-between px-2.5 py-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 rounded transition-colors"
                 >
                   <span>Candidate Sandbox</span>
                   <ExternalLink className="h-3 w-3" />
@@ -524,7 +516,7 @@ export default function DashboardLayout({
                   href={`${API_BASE}/docs`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="flex items-center justify-between px-2 py-1 text-[#716D67] dark:text-[#A8A29E] hover:text-[#C84B18] rounded transition-colors"
+                  className="flex items-center justify-between px-2.5 py-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 rounded transition-colors"
                 >
                   <span>FastAPI Swagger Docs</span>
                   <ExternalLink className="h-3 w-3" />
@@ -534,25 +526,23 @@ export default function DashboardLayout({
           </div>
         </nav>
 
-        {/* ══════════════════════════════════════════════════════
-            BOTTOM PROFILE & LOGOUT CARD
-           ══════════════════════════════════════════════════════ */}
-        <div className="p-3 border-t border-[#E5E0D8] dark:border-[#292524] bg-[#FAF8F5] dark:bg-[#141312] shrink-0">
+        {/* BOTTOM PROFILE & LOGOUT CARD */}
+        <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0f1424] shrink-0">
           <div className={`flex items-center gap-3 ${sidebarCollapsed ? "flex-col justify-center" : "justify-between"}`}>
             <div className={`flex items-center gap-2.5 overflow-hidden ${sidebarCollapsed ? "justify-center" : ""}`}>
               <div 
-                className="h-9 w-9 rounded-xl bg-[#C84B18] dark:bg-[#EA580C] text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0 cursor-pointer"
+                className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-xs shadow-sm shrink-0 cursor-pointer"
                 title={fullName || "User Account"}
               >
-                {fullName ? fullName.charAt(0).toUpperCase() : "T"}
+                {fullName ? fullName.charAt(0).toUpperCase() : "U"}
               </div>
               {!sidebarCollapsed && (
                 <div className="overflow-hidden">
-                  <div className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4] truncate">
-                    {fullName || "Dr. Sarah Jenkins"}
+                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    {fullName || "Instructor"}
                   </div>
-                  <div className="text-[10px] text-[#716D67] dark:text-[#A8A29E] font-medium capitalize truncate">
-                    {role || "Teacher"} · EduQuizX
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase truncate">
+                    {role || "user"} · EduQuizX
                   </div>
                 </div>
               )}
@@ -560,8 +550,8 @@ export default function DashboardLayout({
 
             <button 
               onClick={() => { logout(); router.push("/login"); }}
-              className={`p-2 rounded-xl text-[#716D67] dark:text-[#A8A29E] hover:text-red-500 hover:bg-[#F0ECE4] dark:hover:bg-[#201D1A] transition-colors cursor-pointer ${
-                sidebarCollapsed ? "mt-1" : ""
+              className={`p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer ${
+                sidebarCollapsed ? "mt-1.5" : ""
               }`}
               title="Sign Out"
             >
@@ -571,31 +561,29 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* ══════════════════════════════════════════════════════
-          MAIN CONTENT AREA & TOPBAR
-         ══════════════════════════════════════════════════════ */}
+      {/* MAIN CONTENT AREA & TOPBAR */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Top App Navigation Header */}
-        <header className="h-16 border-b border-[#E5E0D8] dark:border-[#292524] bg-[#FFFFFF] dark:bg-[#171615] px-4 md:px-6 flex items-center justify-between shrink-0 shadow-xs">
+        <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131b2e] px-4 md:px-6 flex items-center justify-between shrink-0 shadow-sm transition-colors duration-300">
           
           {/* Left Breadcrumb & Mobile Menu Toggle */}
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden p-2 rounded-xl text-[#716D67] hover:text-[#242321] hover:bg-[#FAF8F5] dark:hover:bg-[#201D1A] cursor-pointer"
+              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
             >
               <Menu className="h-5 w-5" />
             </button>
 
-            <div className="flex items-center gap-2 text-xs text-[#716D67] dark:text-[#A8A29E]">
-              <span className="font-medium">EduQuizX</span>
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-bold">EduQuizX</span>
               <span>/</span>
-              <span className="font-bold text-[#242321] dark:text-[#F5F5F4]">
+              <span className="font-extrabold text-slate-900 dark:text-white">
                 {pathname === "/dashboard/teacher" ? "Quiz Creator Studio" : "Student Portal"}
               </span>
               <a 
                 href="/" 
-                className="ml-2 hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#C84B18]/10 text-[#C84B18] dark:bg-[#EA580C]/15 dark:text-[#EA580C] hover:bg-[#C84B18]/20 text-xs font-semibold transition-all border border-[#C84B18]/20"
+                className="ml-2 hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-650 dark:bg-blue-450/15 dark:text-blue-400 hover:bg-blue-600/20 text-xs font-bold transition-all border border-blue-500/20"
                 title="Switch Workspace Mode"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
@@ -607,20 +595,20 @@ export default function DashboardLayout({
           {/* Center Search Input */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
             <div className="relative w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#716D67] dark:text-[#A8A29E]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
               <input 
                 type="text" 
                 placeholder="Search assessments, candidate cohorts, questions..." 
-                className="w-full bg-[#FAF8F5] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524] rounded-xl pl-9 pr-4 py-2 text-xs text-[#242321] dark:text-[#F5F5F4] placeholder-[#716D67] dark:placeholder-[#A8A29E] focus:outline-none focus:ring-1 focus:ring-[#C84B18] transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-202 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-450 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
 
           {/* Right Action Menu: Help, Notifications, Theme Toggle */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <a 
               href="/guide"
-              className="p-2 rounded-xl text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#FAF8F5] dark:hover:bg-[#201D1A] transition-colors"
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-55 dark:hover:bg-slate-800 transition-colors"
               title="Documentation Guide"
             >
               <HelpCircle className="h-4.5 w-4.5" />
@@ -630,12 +618,12 @@ export default function DashboardLayout({
             <div className="relative">
               <button 
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="p-2 rounded-xl text-[#716D67] dark:text-[#A8A29E] hover:text-[#242321] dark:hover:text-[#F5F5F4] hover:bg-[#FAF8F5] dark:hover:bg-[#201D1A] relative transition-colors cursor-pointer" 
+                className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-colors cursor-pointer" 
                 title="Notifications"
               >
                 <Bell className="h-4.5 w-4.5" />
                 {unreadCount > 0 && (
-                  <span className="absolute 1 top-1 right-1 h-4 w-4 rounded-full bg-[#C84B18] text-white text-[9px] font-bold flex items-center justify-center shadow-xs">
+                  <span className="absolute top-1 right-1 h-4.5 w-4.5 rounded-full bg-blue-600 text-white text-[9px] font-extrabold flex items-center justify-center shadow-md">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -643,13 +631,13 @@ export default function DashboardLayout({
 
               {/* Notification Flyout */}
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-[#1C1A17] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in duration-200">
-                  <div className="p-3.5 border-b border-[#E5E0D8] dark:border-[#292524] flex items-center justify-between bg-[#FAF8F5] dark:bg-[#141312]">
+                <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden animate-fadeIn">
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900">
                     <div className="flex items-center gap-2">
-                      <Bell className="h-4 w-4 text-[#C84B18]" />
-                      <span className="text-xs font-bold text-[#242321] dark:text-[#F5F5F4]">Notifications</span>
+                      <Bell className="h-4 w-4 text-blue-600" />
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">Notifications</span>
                       {unreadCount > 0 && (
-                        <span className="text-[10px] bg-[#C84B18]/10 text-[#C84B18] px-2 py-0.5 rounded-full font-bold">
+                        <span className="text-[10px] bg-blue-600/10 text-blue-600 px-2 py-0.5 rounded-full font-bold">
                           {unreadCount} new
                         </span>
                       )}
@@ -657,16 +645,16 @@ export default function DashboardLayout({
                     {unreadCount > 0 && (
                       <button 
                         onClick={markAllRead}
-                        className="text-[11px] text-[#C84B18] hover:underline font-semibold cursor-pointer"
+                        className="text-[11px] text-blue-600 hover:underline font-bold cursor-pointer"
                       >
                         Mark all read
                       </button>
                     )}
                   </div>
 
-                  <div className="max-h-80 overflow-y-auto divide-y divide-[#E5E0D8]/60 dark:divide-[#292524]">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
                     {notifications.length === 0 ? (
-                      <div className="p-8 text-center text-xs text-[#716D67] dark:text-[#A8A29E]">
+                      <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
                         <Bell className="h-6 w-6 mx-auto mb-2 opacity-30" />
                         <span>No new notifications</span>
                       </div>
@@ -674,23 +662,23 @@ export default function DashboardLayout({
                       notifications.map((n) => (
                         <div 
                           key={n.id} 
-                          className={`p-3.5 text-xs transition-all hover:bg-[#FAF8F5] dark:hover:bg-[#201D1A] flex items-start justify-between gap-2.5 ${
-                            !n.is_read ? "bg-[#C84B18]/5 dark:bg-[#EA580C]/10 font-medium" : ""
+                          className={`p-4 text-xs transition-all hover:bg-slate-50 dark:hover:bg-slate-800 flex items-start justify-between gap-3 ${
+                            !n.is_read ? "bg-blue-500/5 dark:bg-blue-400/5 font-semibold" : ""
                           }`}
                         >
                           <div className="space-y-1 flex-1">
                             <div className="flex items-center justify-between">
-                              <span className="font-semibold text-[#242321] dark:text-[#F5F5F4]">{n.title}</span>
-                              <span className="text-[10px] text-[#716D67] dark:text-[#A8A29E]">
+                              <span className="font-bold text-slate-900 dark:text-white">{n.title}</span>
+                              <span className="text-[10px] text-slate-550 dark:text-slate-500">
                                 {n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                               </span>
                             </div>
-                            <p className="text-[11px] text-[#716D67] dark:text-[#A8A29E] leading-relaxed">{n.message}</p>
+                            <p className="text-[11px] text-slate-550 dark:text-slate-400 leading-relaxed">{n.message}</p>
                             {n.link && (
                               <a 
                                 href={n.link}
                                 onClick={() => { markRead(n.id); setNotifOpen(false); }}
-                                className="inline-flex items-center gap-1 text-[11px] text-[#C84B18] hover:underline font-medium mt-1"
+                                className="inline-flex items-center gap-1 text-[11px] text-blue-650 hover:underline font-bold mt-1.5"
                               >
                                 View details &rarr;
                               </a>
@@ -699,7 +687,7 @@ export default function DashboardLayout({
                           {!n.is_read && (
                             <button 
                               onClick={() => markRead(n.id)}
-                              className="h-2 w-2 rounded-full bg-[#C84B18] hover:scale-125 transition-all shrink-0 mt-1.5 cursor-pointer"
+                              className="h-2 w-2 rounded-full bg-blue-600 hover:scale-125 transition-all shrink-0 mt-1.5 cursor-pointer"
                               title="Mark read"
                             />
                           )}
@@ -712,14 +700,14 @@ export default function DashboardLayout({
             </div>
 
             {/* Theme Toggle (Light / Dark / System) */}
-            <div className="flex items-center bg-[#FAF8F5] dark:bg-[#141312] p-1 rounded-xl text-[11px] font-semibold border border-[#E5E0D8] dark:border-[#292524]">
+            <div className="flex items-center bg-slate-50 dark:bg-[#0b0f19] p-1 rounded-xl text-[11px] font-bold border border-slate-200 dark:border-slate-800">
               <button 
                 type="button"
                 onClick={() => handleThemeChange("light")}
-                className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                   themeMode === "light" 
-                    ? "bg-white text-[#242321] shadow-xs" 
-                    : "text-[#716D67] hover:text-[#242321]"
+                    ? "bg-white text-slate-905 shadow-xs" 
+                    : "text-slate-500 hover:text-slate-800"
                 }`}
                 title="Light Mode"
               >
@@ -729,10 +717,10 @@ export default function DashboardLayout({
               <button 
                 type="button"
                 onClick={() => handleThemeChange("dark")}
-                className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                   themeMode === "dark" 
-                    ? "bg-[#24211E] text-[#F5F5F4] shadow-xs" 
-                    : "text-[#716D67] hover:text-[#F5F5F4]"
+                    ? "bg-[#1e293b] text-white shadow-xs" 
+                    : "text-slate-500 hover:text-slate-350"
                 }`}
                 title="Dark Mode"
               >
@@ -742,10 +730,10 @@ export default function DashboardLayout({
               <button 
                 type="button"
                 onClick={() => handleThemeChange("system")}
-                className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                   themeMode === "system" 
-                    ? "bg-white dark:bg-[#24211E] text-[#242321] dark:text-[#F5F5F4] shadow-xs" 
-                    : "text-[#716D67] hover:text-[#242321]"
+                    ? "bg-white dark:bg-[#1e293b] text-slate-900 dark:text-white shadow-xs" 
+                    : "text-slate-500 hover:text-slate-800"
                 }`}
                 title="System Theme"
               >
@@ -757,53 +745,51 @@ export default function DashboardLayout({
         </header>
 
         {/* Main Content Body */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#FAF8F5] dark:bg-[#0F0E0D]">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 dark:bg-[#0b0f19]">
           {children}
         </main>
       </div>
 
-      {/* ══════════════════════════════════════════════════════
-          SETTINGS MODAL
-         ══════════════════════════════════════════════════════ */}
+      {/* SETTINGS MODAL */}
       {settingsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-[#FFFFFF] dark:bg-[#171615] border border-[#E5E0D8] dark:border-[#292524] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-[#E5E0D8] dark:border-[#292524] pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-[#131b2e] border border-slate-202 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-[#C84B18]/10 text-[#C84B18] dark:bg-[#EA580C]/15 dark:text-[#EA580C] rounded-xl border border-[#C84B18]/20">
+                <div className="p-2.5 bg-blue-500/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-400 rounded-xl border border-blue-500/20">
                   <Sliders className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-[#242321] dark:text-[#F5F5F4]">System & Profile Settings</h3>
-                  <p className="text-xs text-[#716D67] dark:text-[#A8A29E]">Workspace and account preferences</p>
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">System & Profile Settings</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Workspace and account preferences</p>
                 </div>
               </div>
               <button
                 onClick={() => setSettingsModalOpen(false)}
-                className="p-1.5 rounded-lg text-[#716D67] hover:bg-[#F0ECE4] dark:hover:bg-[#201D1A] transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-105 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="space-y-1.5 p-4 rounded-xl bg-[#FAF8F5] dark:bg-[#141312] border border-[#E5E0D8] dark:border-[#292524]">
-                <div className="font-bold text-sm text-[#242321] dark:text-[#F5F5F4]">{fullName || "Dr. Sarah Jenkins"}</div>
-                <div className="text-[11px] text-[#716D67] dark:text-[#A8A29E] font-medium">Role: <span className="font-bold text-[#C84B18] uppercase">{role || "TEACHER"}</span></div>
-                <div className="text-[11px] text-[#716D67] dark:text-[#A8A29E]">Institution: EduQuizX Academy</div>
+              <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-slate-800">
+                <div className="font-bold text-sm text-slate-900 dark:text-white">{fullName || "Instructor"}</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-bold">Role: <span className="font-bold text-blue-600 dark:text-blue-400 uppercase">{role || "User"}</span></div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Institution: EduQuizX Academy</div>
               </div>
 
               <div className="space-y-2">
-                <label className="font-bold text-[#242321] dark:text-[#F5F5F4] uppercase tracking-wider text-[10px]">Theme Mode</label>
+                <label className="font-extrabold text-slate-650 dark:text-slate-400 uppercase tracking-wider text-[10px]">Theme Mode</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(["light", "dark", "system"] as const).map((mode) => (
                     <button
                       key={mode}
                       onClick={() => handleThemeChange(mode)}
-                      className={`p-2.5 rounded-xl border text-center font-semibold capitalize transition-all cursor-pointer ${
+                      className={`p-2.5 rounded-xl border text-center font-bold capitalize transition-all cursor-pointer ${
                         themeMode === mode
-                          ? "bg-[#C84B18]/10 border-[#C84B18] text-[#C84B18] dark:bg-[#EA580C]/15 dark:border-[#EA580C] dark:text-[#EA580C] shadow-xs"
-                          : "border-[#E5E0D8] dark:border-[#292524] bg-[#FAF8F5] dark:bg-[#141312] text-[#716D67] hover:text-[#242321]"
+                          ? "bg-blue-500/10 border-blue-500 text-blue-600 dark:bg-blue-400/15 dark:border-blue-400 dark:text-blue-400 shadow-xs"
+                          : "border-slate-200 dark:border-slate-850 bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-800"
                       }`}
                     >
                       {mode}
@@ -812,16 +798,16 @@ export default function DashboardLayout({
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-[#E5E0D8] dark:border-[#292524] flex justify-between items-center">
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
                 <button
                   onClick={() => { logout(); router.push("/login"); }}
-                  className="px-4 py-2 rounded-xl text-red-600 border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-rose-600 border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/20 font-bold cursor-pointer transition-colors"
                 >
                   Sign Out
                 </button>
                 <button
                   onClick={() => setSettingsModalOpen(false)}
-                  className="px-5 py-2 bg-[#C84B18] hover:bg-[#B33F12] text-white font-semibold rounded-xl shadow-sm cursor-pointer transition-colors"
+                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs cursor-pointer transition-colors"
                 >
                   Done
                 </button>
